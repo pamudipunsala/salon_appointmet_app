@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/views/dashboard.dart';
 import 'package:salon_appointment_app/views/splashscreen.dart';
 
 void main() {

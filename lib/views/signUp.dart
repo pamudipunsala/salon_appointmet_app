@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:salon_appointment_app/views/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -318,14 +319,26 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   // Sign Up button
                   Platform.isIOS
-                      ? CupertinoButton.filled(
-                          onPressed: () {},
+                      ? CupertinoButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const DashboardPage()));
+                          },
                           child: const Text('Sign Up'),
+                          color: Color.fromARGB(255, 152, 11, 58),
                         )
                       : ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DashboardPage()));
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Color.fromARGB(255, 152, 11, 58),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             textStyle: const TextStyle(
                               fontSize: 18.0,
