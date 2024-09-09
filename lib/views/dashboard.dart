@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/views/appointment_summary.dart';
 import 'package:salon_appointment_app/views/customers.dart';
 import 'package:salon_appointment_app/views/menu.dart';
 import 'package:salon_appointment_app/views/salons.dart';
@@ -24,7 +25,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {
       'title': 'Appointment Summary',
       'icon': Icons.calendar_today,
-      'page': ServicesPage()
+      'page': AppointmentSummaryPage()
     },
     {'title': 'Staff', 'icon': Icons.group, 'page': ServicesPage()},
     {'title': 'Marketing', 'icon': Icons.campaign, 'page': ServicesPage()},

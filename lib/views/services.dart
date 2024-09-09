@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/views/categories.dart';
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
@@ -138,7 +139,13 @@ class _ServicesPageState extends State<ServicesPage> {
                                   style: TextStyle(fontSize: 16.0),
                                 ),
                                 color: Color.fromARGB(255, 152, 11, 58),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CategoryPage()),
+                                  );
+                                },
                               ))
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
