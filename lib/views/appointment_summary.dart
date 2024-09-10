@@ -102,7 +102,7 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
           ),
           // Cancelled
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 14.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

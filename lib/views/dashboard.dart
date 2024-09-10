@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/views/appointment_summary.dart';
 import 'package:salon_appointment_app/views/customers.dart';
 import 'package:salon_appointment_app/views/menu.dart';
+import 'package:salon_appointment_app/views/products.dart';
 import 'package:salon_appointment_app/views/salons.dart';
 import 'package:salon_appointment_app/views/services.dart';
+import 'package:salon_appointment_app/views/staff.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -20,14 +22,14 @@ class _DashboardPageState extends State<DashboardPage> {
     {'title': 'Salons', 'icon': Icons.store, 'page': SalonBranchesPage()},
     {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
     {'title': 'Services', 'icon': Icons.room_service, 'page': ServicesPage()},
-    {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ServicesPage()},
+    {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ProductsPage()},
     {'title': 'Offers', 'icon': Icons.local_offer, 'page': ServicesPage()},
     {
       'title': 'Appointment Summary',
       'icon': Icons.calendar_today,
       'page': AppointmentSummaryPage()
     },
-    {'title': 'Staff', 'icon': Icons.group, 'page': ServicesPage()},
+    {'title': 'Staff', 'icon': Icons.group, 'page': StaffDetailsPage()},
     {'title': 'Marketing', 'icon': Icons.campaign, 'page': ServicesPage()},
   ];
 
