@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/views/appointment_summary.dart';
 import 'package:salon_appointment_app/views/customers.dart';
 import 'package:salon_appointment_app/views/menu.dart';
+import 'package:salon_appointment_app/views/offers.dart';
 import 'package:salon_appointment_app/views/products.dart';
 import 'package:salon_appointment_app/views/salons.dart';
 import 'package:salon_appointment_app/views/services.dart';
@@ -23,7 +24,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
     {'title': 'Services', 'icon': Icons.room_service, 'page': ServicesPage()},
     {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ProductsPage()},
-    {'title': 'Offers', 'icon': Icons.local_offer, 'page': ServicesPage()},
+    {'title': 'Offers', 'icon': Icons.local_offer, 'page': OffersPage()},
     {
       'title': 'Appointment Summary',
       'icon': Icons.calendar_today,

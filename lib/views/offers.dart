@@ -1,13 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/views/appointment_summary.dart';
-import 'package:salon_appointment_app/views/customers.dart';
-import 'package:salon_appointment_app/views/menu.dart';
-import 'package:salon_appointment_app/views/products.dart';
-import 'package:salon_appointment_app/views/salons.dart';
-import 'package:salon_appointment_app/views/services.dart';
-import 'package:salon_appointment_app/views/staff.dart';
 
 class OffersPage extends StatefulWidget {
   const OffersPage({super.key});
@@ -17,48 +10,76 @@ class OffersPage extends StatefulWidget {
 }
 
 class _OffersPageState extends State<OffersPage> {
-  // List of dashboard items with text and icons
-  final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Salons', 'icon': Icons.store, 'page': SalonBranchesPage()},
-    {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
-    {'title': 'Services', 'icon': Icons.room_service, 'page': ServicesPage()},
-    {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ProductsPage()},
-    {'title': 'Offers', 'icon': Icons.local_offer, 'page': ServicesPage()},
-    {
-      'title': 'Appointment Summary',
-      'icon': Icons.calendar_today,
-      'page': AppointmentSummaryPage()
-    },
-    {'title': 'Staff', 'icon': Icons.group, 'page': StaffDetailsPage()},
-    {'title': 'Marketing', 'icon': Icons.campaign, 'page': ServicesPage()},
-  ];
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
+    // List of products and image paths for demonstration
+    final products = [
+      {'image': 'assets/images/img26.png'},
+      {'image': 'assets/images/img27.png'},
+      {'image': 'assets/images/img28.png'},
+      {'image': 'assets/images/img29.jpeg'},
+      {'image': 'assets/images/img30.png'},
+      {'image': 'assets/images/img26.png'},
+      {'image': 'assets/images/img27.png'},
+      {'image': 'assets/images/img28.png'},
+      {'image': 'assets/images/img29.jpeg'},
+      {'image': 'assets/images/img30.png'},
+      {'image': 'assets/images/img26.png'},
+      {'image': 'assets/images/img27.png'}
+    ];
+
+    List<Map<String, dynamic>> _filteredproducts = [];
+    final TextEditingController _searchController = TextEditingController();
+
+    void _filterproducts() {
+      final query = _searchController.text.toLowerCase();
+      setState(() {
+        if (query.isEmpty) {
+          // Show all orders when the search query is empty
+          _filteredproducts = products;
+        } else {
+          // Filter orders based on the search query
+          _filteredproducts = products
+              .where((order) => order['name']!.toLowerCase().contains(query))
+              .toList();
+        }
+      });
+    }
+
+    @override
+    void initState() {
+      super.initState();
+      _filteredproducts = products;
+      _searchController.addListener(_filterproducts);
+    }
+
+    @override
+    void dispose() {
+      _searchController.removeListener(_filterproducts);
+      _searchController.dispose();
+      super.dispose();
+    }
+
     return Scaffold(
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
-              middle: const Text('Dashboard',
-                  style: TextStyle(color: Colors.white)),
+              middle:
+                  const Text('Offers', style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(CupertinoIcons.bars, color: Colors.white),
-                  );
-                },
-              ),
-            )
+              leading: Builder(builder: (BuildContext context) {
+                return CupertinoNavigationBarBackButton(
+                  color: Colors.white, // Set the desired color here
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Define the back action
+                  },
+                );
+              }))
           : AppBar(
               title: const Text(
-                'Dashboard',
+                'Offers',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
@@ -66,69 +87,90 @@ class _OffersPageState extends State<OffersPage> {
                 color: Colors.white,
               ),
             ),
-      drawer: Menu(),
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img9.jpeg',
+              'assets/images/img3.png',
               fit: BoxFit.cover,
             ),
           ),
-          // Transparent color overlay
           Positioned.fill(
             child: Container(
               color: Colors.black.withOpacity(0.6),
             ),
           ),
-          // Grid of pink square buttons
           Padding(
-            padding: const EdgeInsets.all(26.0),
+            padding: const EdgeInsets.all(16.0),
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Display two items per row
+                crossAxisCount: 2, // 2 items per row
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                childAspectRatio: 1, // Keep squares
+                childAspectRatio: 3 / 2, // Adjust to fit the images
               ),
-              itemCount: dashboardItems.length,
+              itemCount: products.length,
               itemBuilder: (context, index) {
-                final item = dashboardItems[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => item['page']),
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 152, 11, 58).withOpacity(0.7),
-                      borderRadius:
-                          BorderRadius.circular(12), // Rounded corners
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          item['icon'],
-                          color: Colors.white,
-                          size: 40,
+                final service = products[index];
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          service['image']!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          item['title'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    // Button with service name
+                    Positioned(
+                      bottom: 20,
+                      child: Platform.isIOS
+                          ? Container(
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: CupertinoButton(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 22.0),
+                                child: Text(
+                                  'Apply Now',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                color: const Color.fromARGB(255, 152, 11, 58),
+                                onPressed: () {},
+                              ),
+                            )
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 152, 11, 58),
+                                side: const BorderSide(
+                                    color: Colors.white, width: 2),
+                              ),
+                              onPressed: () {
+                                // Handle service button press
+                              },
+                              child: Text(
+                                'Apply Now',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
                 );
               },
             ),
