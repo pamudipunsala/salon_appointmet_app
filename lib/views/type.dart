@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/vehicleService/views/dashboard.dart';
 import 'package:salon_appointment_app/views/appointment_summary.dart';
 import 'package:salon_appointment_app/views/customers.dart';
 import 'package:salon_appointment_app/views/dashboard.dart';
@@ -18,11 +19,11 @@ class BusinessTypePage extends StatefulWidget {
 class _BusinessTypePageState extends State<BusinessTypePage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Salons', 'icon': Icons.store, 'page': DashboardPage()},
+    {'title': 'Beauty Care', 'icon': Icons.store, 'page': DashboardPage()},
     {
       'title': 'Vehicle',
       'icon': Icons.directions_car,
-      'page': CustomerDetailsPage()
+      'page': VehicleDashboardPage()
     },
   ];
 

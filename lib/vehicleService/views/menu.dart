@@ -47,12 +47,12 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.report),
+            leading: const Icon(Icons.directions_bike),
             title: const Text('Accident Form'),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.design_services),
             title: const Text('Next Service'),
             onTap: () {
               Navigator.push(
@@ -62,7 +62,7 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.history),
             title: const Text('Service History'),
             onTap: () {
               Navigator.push(
@@ -72,7 +72,7 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.edit),
             title: const Text('Edit Reminders'),
             onTap: () {
               Navigator.push(
@@ -82,7 +82,7 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.event),
             title: const Text('Service Event'),
             onTap: () {
               Navigator.push(
@@ -92,7 +92,7 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.track_changes),
             title: const Text('Tracking Details'),
             onTap: () {
               Navigator.push(
