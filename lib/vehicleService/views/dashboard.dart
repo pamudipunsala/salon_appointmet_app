@@ -1,12 +1,16 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/views/appointment_summary.dart';
+import 'package:salon_appointment_app/vehicleService/views/appointment.dart';
+import 'package:salon_appointment_app/vehicleService/views/appointment_history.dart';
+import 'package:salon_appointment_app/vehicleService/views/providers.dart';
+import 'package:salon_appointment_app/vehicleService/views/reviews.dart';
+import 'package:salon_appointment_app/vehicleService/views/status.dart';
+import 'package:salon_appointment_app/vehicleService/views/user_profile.dart';
 import 'package:salon_appointment_app/views/customers.dart';
 import 'package:salon_appointment_app/views/menu.dart';
 import 'package:salon_appointment_app/views/offers.dart';
 import 'package:salon_appointment_app/views/products.dart';
-import 'package:salon_appointment_app/views/salons.dart';
 import 'package:salon_appointment_app/views/services.dart';
 import 'package:salon_appointment_app/views/staff.dart';
 
@@ -23,28 +27,28 @@ class _VehicleDashboardPageState extends State<VehicleDashboardPage> {
     {
       'title': 'List of Providers',
       'icon': Icons.people,
-      'page': SalonBranchesPage()
+      'page': ProviderDetails()
     },
     {
       'title': 'Book an appointment',
       'icon': Icons.note,
-      'page': CustomerDetailsPage()
+      'page': AppointmentPage()
     },
     {
       'title': 'Cutomer Comments & Review',
       'icon': Icons.reviews,
-      'page': ServicesPage()
+      'page': ReviewDetails()
     },
     {
       'title': 'Appointment Status',
       'icon': Icons.details,
-      'page': ProductsPage()
+      'page': AppointmentStatus()
     },
-    {'title': 'History', 'icon': Icons.history, 'page': OffersPage()},
+    {'title': 'History', 'icon': Icons.history, 'page': AppointmentHistory()},
     {
       'title': 'User Profile',
       'icon': Icons.people_outline,
-      'page': StaffDetailsPage()
+      'page': ProfileScreenPage()
     },
   ];
 
