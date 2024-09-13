@@ -5,8 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/views/services.dart';
-import 'package:salon_appointment_app/views/signUp.dart';
+import 'package:salon_appointment_app/BeautyCare/views/services.dart';
+import 'package:salon_appointment_app/BeautyCare/views/signUp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {

@@ -73,7 +73,6 @@ class _ReviewDetailsState extends State<ReviewDetails> {
             ),
             const SizedBox(height: 16),
 
-            // Comment input field
             TextField(
               controller: _commentController,
               maxLines: 4,

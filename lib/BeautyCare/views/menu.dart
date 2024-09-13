@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/views/dashboard.dart';
-import 'package:salon_appointment_app/views/login.dart';
+import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/views/login.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
@@ -38,7 +38,7 @@ class Menu extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.dashboard),
-            title: const Text('Find a shop'),
+            title: const Text('Dashboard'),
             onTap: () {
               Navigator.push(
                 context,
@@ -47,53 +47,13 @@ class Menu extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.directions_bike),
-            title: const Text('Accident Form'),
+            leading: const Icon(Icons.report),
+            title: const Text('Reports'),
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.design_services),
-            title: const Text('Next Service'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Service History'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Edit Reminders'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.event),
-            title: const Text('Service Event'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.track_changes),
-            title: const Text('Tracking Details'),
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
             onTap: () {
               Navigator.push(
                 context,

@@ -1,37 +1,50 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/views/appointment_summary.dart';
-import 'package:salon_appointment_app/views/customers.dart';
-import 'package:salon_appointment_app/views/menu.dart';
-import 'package:salon_appointment_app/views/offers.dart';
-import 'package:salon_appointment_app/views/products.dart';
-import 'package:salon_appointment_app/views/salons.dart';
-import 'package:salon_appointment_app/views/services.dart';
-import 'package:salon_appointment_app/views/staff.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/appointment.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/appointment_history.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/providers.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/reviews.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/status.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/user_profile.dart';
+import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+class UsersDashboardPage extends StatefulWidget {
+  const UsersDashboardPage({super.key});
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  _UsersDashboardPageState createState() => _UsersDashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _UsersDashboardPageState extends State<UsersDashboardPage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Salons', 'icon': Icons.store, 'page': SalonBranchesPage()},
-    {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
-    {'title': 'Services', 'icon': Icons.room_service, 'page': ServicesPage()},
-    {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ProductsPage()},
-    {'title': 'Offers', 'icon': Icons.local_offer, 'page': OffersPage()},
     {
-      'title': 'Appointment Summary',
-      'icon': Icons.calendar_today,
-      'page': AppointmentSummaryPage()
+      'title': 'List of Providers',
+      'icon': Icons.people,
+      'page': ProviderDetails()
     },
-    {'title': 'Staff', 'icon': Icons.group, 'page': StaffDetailsPage()},
-    {'title': 'Marketing', 'icon': Icons.campaign, 'page': ServicesPage()},
+    {
+      'title': 'Book an appointment',
+      'icon': Icons.note,
+      'page': AppointmentPage()
+    },
+    {
+      'title': 'Cutomer Comments & Review',
+      'icon': Icons.reviews,
+      'page': ReviewDetails()
+    },
+    {
+      'title': 'Appointment Status',
+      'icon': Icons.details,
+      'page': AppointmentStatus()
+    },
+    {'title': 'History', 'icon': Icons.history, 'page': AppointmentHistory()},
+    {
+      'title': 'User Profile',
+      'icon': Icons.people_outline,
+      'page': ProfileScreenPage()
+    },
   ];
 
   @override

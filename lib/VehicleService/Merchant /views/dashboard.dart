@@ -1,55 +1,32 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/vehicleService/views/appointment.dart';
-import 'package:salon_appointment_app/vehicleService/views/appointment_history.dart';
-import 'package:salon_appointment_app/vehicleService/views/providers.dart';
-import 'package:salon_appointment_app/vehicleService/views/reviews.dart';
-import 'package:salon_appointment_app/vehicleService/views/status.dart';
-import 'package:salon_appointment_app/vehicleService/views/user_profile.dart';
-import 'package:salon_appointment_app/views/customers.dart';
-import 'package:salon_appointment_app/views/menu.dart';
-import 'package:salon_appointment_app/views/offers.dart';
-import 'package:salon_appointment_app/views/products.dart';
-import 'package:salon_appointment_app/views/services.dart';
-import 'package:salon_appointment_app/views/staff.dart';
+import 'package:salon_appointment_app/VehicleService/Merchant%20/views/add_providers.dart';
+import 'package:salon_appointment_app/VehicleService/Merchant%20/views/approve_appointment.dart';
+import 'package:salon_appointment_app/VehicleService/Merchant%20/views/edit_status.dart';
+import 'package:salon_appointment_app/VehicleService/Merchant%20/views/view_reviews.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/user_profile.dart';
+import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
 
-class VehicleDashboardPage extends StatefulWidget {
-  const VehicleDashboardPage({super.key});
+class MerchantDashboardPage extends StatefulWidget {
+  const MerchantDashboardPage({super.key});
 
   @override
-  _VehicleDashboardPageState createState() => _VehicleDashboardPageState();
+  _MerchantDashboardPageState createState() => _MerchantDashboardPageState();
 }
 
-class _VehicleDashboardPageState extends State<VehicleDashboardPage> {
+class _MerchantDashboardPageState extends State<MerchantDashboardPage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
     {
-      'title': 'List of Providers',
-      'icon': Icons.people,
-      'page': ProviderDetails()
+      'title': 'Approve Appointment',
+      'icon': Icons.approval_rounded,
+      'page': ApproveAppointmentScreen()
     },
-    {
-      'title': 'Book an appointment',
-      'icon': Icons.note,
-      'page': AppointmentPage()
-    },
-    {
-      'title': 'Cutomer Comments & Review',
-      'icon': Icons.reviews,
-      'page': ReviewDetails()
-    },
-    {
-      'title': 'Appointment Status',
-      'icon': Icons.details,
-      'page': AppointmentStatus()
-    },
-    {'title': 'History', 'icon': Icons.history, 'page': AppointmentHistory()},
-    {
-      'title': 'User Profile',
-      'icon': Icons.people_outline,
-      'page': ProfileScreenPage()
-    },
+    {'title': 'Edit Status', 'icon': Icons.edit, 'page': EditStatusScreen()},
+    {'title': 'Add Providers', 'icon': Icons.add, 'page': AddProviderDetails()},
+    {'title': 'Profile', 'icon': Icons.people, 'page': ProfileScreenPage()},
+    {'title': 'View Reviews', 'icon': Icons.reviews, 'page': ViewReviews()},
   ];
 
   @override
