@@ -1,14 +1,14 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/views/appointment_summary.dart';
-import 'package:salon_appointment_app/BeautyCare/views/customers.dart';
-import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
-import 'package:salon_appointment_app/BeautyCare/views/offers.dart';
-import 'package:salon_appointment_app/BeautyCare/views/products.dart';
-import 'package:salon_appointment_app/BeautyCare/views/salons.dart';
-import 'package:salon_appointment_app/BeautyCare/views/services.dart';
-import 'package:salon_appointment_app/BeautyCare/views/staff.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/appointment_summary.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/customers.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/offers.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/products.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/salons.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/staff.dart';
+import 'package:salon_appointment_app/menu.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});

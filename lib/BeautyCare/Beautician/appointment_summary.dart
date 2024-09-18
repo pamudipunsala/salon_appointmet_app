@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/views/categories.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/categories.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AppointmentSummaryPage extends StatefulWidget {

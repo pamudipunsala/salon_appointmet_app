@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/login.dart';
+import 'package:salon_appointment_app/login.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});

@@ -6,7 +6,7 @@ import 'package:salon_appointment_app/VehicleService/Merchant%20/views/approve_a
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/edit_status.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/view_reviews.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/user_profile.dart';
-import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
+import 'package:salon_appointment_app/menu.dart';
 
 class MerchantDashboardPage extends StatefulWidget {
   const MerchantDashboardPage({super.key});

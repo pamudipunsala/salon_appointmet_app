@@ -2,13 +2,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/dashboard.dart';
-import 'package:salon_appointment_app/VehicleService/Users/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/appointment_summary.dart';
-import 'package:salon_appointment_app/BeautyCare/views/customers.dart';
 import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
-import 'package:salon_appointment_app/BeautyCare/views/salons.dart';
-import 'package:salon_appointment_app/BeautyCare/views/services.dart';
+import 'package:salon_appointment_app/menu.dart';
 
 class BusinessTypePage extends StatefulWidget {
   const BusinessTypePage({super.key});

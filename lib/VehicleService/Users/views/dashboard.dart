@@ -7,7 +7,7 @@ import 'package:salon_appointment_app/VehicleService/Users/views/providers.dart'
 import 'package:salon_appointment_app/VehicleService/Users/views/reviews.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/status.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/user_profile.dart';
-import 'package:salon_appointment_app/BeautyCare/views/menu.dart';
+import 'package:salon_appointment_app/menu.dart';
 
 class UsersDashboardPage extends StatefulWidget {
   const UsersDashboardPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/splashscreen.dart';
+import 'package:salon_appointment_app/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());

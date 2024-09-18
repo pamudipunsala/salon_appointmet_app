@@ -1,29 +1,73 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/type.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
+import 'package:salon_appointment_app/signUp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  // final Platform platform = const LocalPlatform();
+
+  // Function to handle login
+  // Future<void> _login(BuildContext context) async {
+  //   final username = usernameController.text;
+  //   final password = passwordController.text;
+
+  //   // Check if username or password is empty
+  //   if (username.isEmpty || password.isEmpty) {
+  //     _showErrorDialog(context, 'Please enter both username and password.');
+  //     return;
+  //   }
+
+  //   try {
+  //     // Send HTTP POST request to validate login
+  //     final response = await http.post(
+  //       Uri.parse('https://mobicloudpos.synnexcloudpos.com/'),
+  //       body: {
+  //         'u_name': username,
+  //         'user_password': password,
+  //       },
+  //     );
+
+  //     // If response is successful (HTTP status 200)
+  //     if (response.statusCode == 200) {
+  //       final responseData = json.decode(response.body);
+
+  //       // Check if the response contains user data
+  //       if (responseData is List && responseData.isNotEmpty) {
+  //         final userId = responseData[0]['USID'].toString();
+  //         SharedPreferences prefs = await SharedPreferences.getInstance();
+  //         await prefs.setString('userId', userId);
+
+  //         // Navigate to the dashboard page if login is successful
+  //         //   Navigator.pushReplacement(
+  //         //     context,
+  //         //     MaterialPageRoute(builder: (context) => DashboardPage()),
+  //         //   );
+  //         // } else {
+  //         _showErrorDialog(context, 'Invalid username or password.');
+  //       }
+  //     } else {
+  //       _showErrorDialog(context, 'Error: Could not connect to the server.');
+  //     }
+  //   } catch (e) {
+  //     _showErrorDialog(context, 'An error occurred: $e');
+  //   }
+  // }
 
   // Function to show error dialog
   void _showErrorDialog(BuildContext context, String message) {
@@ -32,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: const Text('Sign Up Failed'),
+            title: const Text('Login Failed'),
             content: Text(message),
             actions: <Widget>[
               CupertinoDialogAction(
@@ -50,7 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Sign Up Failed'),
+            title: const Text('Login Failed'),
             content: Text(message),
             actions: <Widget>[
               TextButton(
@@ -77,7 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img2.jpg',
+              'assets/images/img1.png', // Your background image path
               fit: BoxFit.cover,
             ),
           ),
@@ -87,6 +131,7 @@ class _SignUpPageState extends State<SignUpPage> {
               color: Colors.black.withOpacity(0.4), // Semi-transparent overlay
             ),
           ),
+          // Login form content in a white container
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -107,19 +152,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                  Center(
+                      // child: Image.asset(
+                      //   'assets/images/logo.png', // Optional logo
+                      //   width: 150,
+                      //   height: 100,
+                      // ),
                       ),
-                    ],
-                  ),
+                  const SizedBox(height: 20.0),
                   const Text(
-                    'Sign Up',
+                    'Login',
                     style: TextStyle(
                         fontSize: 25.0,
                         fontWeight: FontWeight.bold,
@@ -127,75 +169,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30.0),
-
-                  //Name input field
-                  Platform.isIOS
-                      ? CupertinoTextField(
-                          controller: usernameController,
-                          placeholder: 'Name',
-                          padding: const EdgeInsets.all(16.0),
-                          keyboardType: TextInputType.text,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-                      : TextFormField(
-                          controller: usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.text,
-                        ),
-                  const SizedBox(height: 16.0),
-
-                  //Email input field
-                  Platform.isIOS
-                      ? CupertinoTextField(
-                          controller: usernameController,
-                          placeholder: 'Email',
-                          padding: const EdgeInsets.all(16.0),
-                          keyboardType: TextInputType.text,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-                      : TextFormField(
-                          controller: usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.text,
-                        ),
-                  const SizedBox(height: 16.0),
-
-                  //Category input field
-                  Platform.isIOS
-                      ? CupertinoTextField(
-                          controller: usernameController,
-                          placeholder: 'Category',
-                          padding: const EdgeInsets.all(16.0),
-                          keyboardType: TextInputType.text,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-                      : TextFormField(
-                          controller: usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.text,
-                        ),
-                  const SizedBox(height: 16.0),
 
                   // Username input field
                   Platform.isIOS
@@ -269,66 +242,16 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                   const SizedBox(height: 30.0),
 
-                  // Confirm Password input field
-                  Platform.isIOS
-                      ? CupertinoTextField(
-                          controller: passwordController,
-                          placeholder: 'Confirm Password',
-                          padding: const EdgeInsets.all(16.0),
-                          obscureText: !_isPasswordVisible,
-                          suffix: CupertinoButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                            child: Icon(
-                                _isPasswordVisible
-                                    ? CupertinoIcons.eye
-                                    : CupertinoIcons.eye_slash,
-                                color: const Color.fromARGB(255, 152, 11, 58)),
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-                      : TextFormField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: const Color.fromRGBO(118, 118, 118, 1),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          obscureText: !_isPasswordVisible,
-                        ),
-                  const SizedBox(height: 30.0),
-
-                  // Sign Up button
+                  // Login button
                   Platform.isIOS
                       ? CupertinoButton(
                           onPressed: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BusinessTypePage()));
+                                    builder: (context) => ServicesPage()));
                           },
-                          child: const Text('Sign Up'),
+                          child: const Text('Login'),
                           color: Color.fromARGB(255, 152, 11, 58),
                         )
                       : ElevatedButton(
@@ -336,7 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DashboardPage()));
+                                    builder: (context) => ServicesPage()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 152, 11, 58),
@@ -346,10 +269,42 @@ class _SignUpPageState extends State<SignUpPage> {
                               color: Colors.white,
                             ),
                           ),
-                          child: const Text('Sign Up',
+                          child: const Text('Login',
                               style: TextStyle(color: Colors.white)),
                         ),
                   const SizedBox(height: 20.0),
+
+                  Center(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Don't have an account? ",
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 14.0),
+                        children: [
+                          TextSpan(
+                            text: 'Sign up',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 152, 11, 58),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Navigate to the SignUp page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignUpPage(),
+                                  ),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
+
                   Text(
                     Platform.isIOS
                         ? 'Powered by Synnex IT Solutions 2024 (iOS)'
