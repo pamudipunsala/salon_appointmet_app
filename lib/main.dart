@@ -3,6 +3,7 @@ import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
 import 'package:salon_appointment_app/splashscreen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

@@ -1,11 +1,12 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_offers.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_products.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_salons.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_services.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/appointment_summary.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/customers.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/offers.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/products.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/salons.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/staff.dart';
 import 'package:salon_appointment_app/menu.dart';
@@ -20,11 +21,19 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Salons', 'icon': Icons.store, 'page': SalonBranchesPage()},
+    {'title': 'Salons', 'icon': Icons.store, 'page': AddSalonBranchesPage()},
     {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
-    {'title': 'Services', 'icon': Icons.room_service, 'page': ServicesPage()},
-    {'title': 'Products', 'icon': Icons.shopping_bag, 'page': ProductsPage()},
-    {'title': 'Offers', 'icon': Icons.local_offer, 'page': OffersPage()},
+    {
+      'title': 'Services',
+      'icon': Icons.room_service,
+      'page': AddServicesPage()
+    },
+    {
+      'title': 'Products',
+      'icon': Icons.shopping_bag,
+      'page': AddProductsPage()
+    },
+    {'title': 'Offers', 'icon': Icons.local_offer, 'page': AddOffersPage()},
     {
       'title': 'Appointment Summary',
       'icon': Icons.calendar_today,
