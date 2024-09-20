@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
 import 'package:salon_appointment_app/splashscreen.dart';
 
 void main() {

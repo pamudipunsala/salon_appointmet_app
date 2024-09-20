@@ -233,7 +233,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
           Column(
             children: [
               // Search bar
-              Padding(
+        Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
@@ -276,7 +276,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                   ],
                 ),
               ),
-              Expanded(
+                    Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(top: 20),
                   itemCount: _filteredCategories.length,

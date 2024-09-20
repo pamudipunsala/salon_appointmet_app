@@ -53,6 +53,121 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
     super.dispose();
   }
 
+  void _showAddSalonDialog(BuildContext context) {
+    final TextEditingController _nameController = TextEditingController();
+    final TextEditingController _phoneNumberController =
+        TextEditingController();
+    final TextEditingController _userNameController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Platform.isIOS
+            ? CupertinoAlertDialog(
+                title: const Text('Add New Customer'),
+                content: Column(
+                  children: [
+                    SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _nameController,
+                      placeholder: 'Enter Customer Name',
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _phoneNumberController,
+                      placeholder: 'Enter Phone Number',
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _userNameController,
+                      placeholder: 'Enter UserName',
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _passwordController,
+                      placeholder: 'Enter Password',
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+                actions: [
+                  CupertinoDialogAction(
+                    isDefaultAction: true,
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: const Text('Add'),
+                    onPressed: () {},
+                  ),
+                ],
+              )
+            : AlertDialog(
+                title: const Text('Add New Customer'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Customer Name',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _phoneNumberController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Phone Number',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _userNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter UserName',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Password',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Your "Add" logic goes here
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
+              );
+      },
+    );
+  }
+
+  void _addSalon(String name, String? imagePath) {
+    if (name.isNotEmpty && imagePath != null) {
+      setState(() {
+        customers.add({'name': name});
+        _filteredCustomers = customers;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +199,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                   child: Platform.isIOS
                       ? CupertinoSearchTextField(
                           controller: _searchController,
-                          placeholder: 'Search branches...',
+                          placeholder: 'Search customers...',
                           backgroundColor:
                               const Color.fromRGBO(255, 255, 255, 0.541),
                         )
@@ -92,7 +207,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                           controller: _searchController,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.search),
-                            hintText: 'Search branches...',
+                            hintText: 'Search customers...',
                             border: OutlineInputBorder(),
                             fillColor: Color.fromRGBO(255, 255, 255, 0.541),
                           ),
@@ -103,13 +218,17 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                     ? CupertinoButton(
                         padding: const EdgeInsets.all(8.0),
                         color: const Color.fromARGB(255, 152, 11, 58),
-                        onPressed: () {},
+                        onPressed: () {
+                          _showAddSalonDialog(context);
+                        },
                         child:
                             const Icon(CupertinoIcons.add, color: Colors.white),
                       )
                     : IconButton(
                         icon: const Icon(Icons.add, color: Colors.white),
-                        onPressed: () {},
+                        onPressed: () {
+                          _showAddSalonDialog(context);
+                        },
                         color: const Color.fromARGB(255, 152, 11, 58),
                       ),
               ],

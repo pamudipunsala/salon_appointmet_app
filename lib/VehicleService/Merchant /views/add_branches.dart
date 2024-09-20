@@ -2,14 +2,14 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AddProviderDetails extends StatefulWidget {
-  const AddProviderDetails({super.key});
+class AddBranchDetails extends StatefulWidget {
+  const AddBranchDetails({super.key});
 
   @override
-  _AddProviderDetailsState createState() => _AddProviderDetailsState();
+  _AddBranchDetailsState createState() => _AddBranchDetailsState();
 }
 
-class _AddProviderDetailsState extends State<AddProviderDetails> {
+class _AddBranchDetailsState extends State<AddBranchDetails> {
   final _formKey = GlobalKey<FormState>();
 
   // Text editing controllers

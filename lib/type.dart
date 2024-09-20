@@ -2,7 +2,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/mock_dashboard.dart';
+import 'package:salon_appointment_app/VehicleService/mock_dashboard.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class BusinessTypePage extends StatefulWidget {
@@ -15,11 +16,15 @@ class BusinessTypePage extends StatefulWidget {
 class _BusinessTypePageState extends State<BusinessTypePage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Beauty Care', 'icon': Icons.store, 'page': DashboardPage()},
+    {
+      'title': 'Beauty Care',
+      'icon': Icons.store,
+      'page': BeautyCareMockDashboardPage()
+    },
     {
       'title': 'Vehicle',
       'icon': Icons.directions_car,
-      'page': MerchantDashboardPage()
+      'page': VehicleMockDashboardPage()
     },
   ];
 

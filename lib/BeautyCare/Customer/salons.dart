@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
 
 class SalonBranchesPage extends StatefulWidget {
   const SalonBranchesPage({super.key});
@@ -151,7 +152,9 @@ class _SalonBranchesPageState extends State<SalonBranchesPage> {
                                         vertical: 8.0, horizontal: 22.0),
                                     color:
                                         const Color.fromARGB(255, 152, 11, 58),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ServicesPage()));
+                                    },
                                     child: Text(
                                       service['name']!,
                                       style: const TextStyle(fontSize: 16.0),

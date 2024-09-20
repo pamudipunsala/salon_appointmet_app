@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
 import 'package:salon_appointment_app/type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,8 +18,9 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool _isPasswordVisible = false;
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -131,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   //Name input field
                   Platform.isIOS
                       ? CupertinoTextField(
-                          controller: usernameController,
+                          controller: nameController,
                           placeholder: 'Name',
                           padding: const EdgeInsets.all(16.0),
                           keyboardType: TextInputType.text,
@@ -142,7 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       : TextFormField(
-                          controller: usernameController,
+                          controller: nameController,
                           decoration: const InputDecoration(
                             labelText: 'Name',
                             border: OutlineInputBorder(),
@@ -151,11 +152,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                   const SizedBox(height: 16.0),
 
-                  //Email input field
+                  //Phone Number input field
                   Platform.isIOS
                       ? CupertinoTextField(
-                          controller: usernameController,
-                          placeholder: 'Email',
+                          controller: phoneNumberController,
+                          placeholder: 'Phone Number',
                           padding: const EdgeInsets.all(16.0),
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
@@ -165,9 +166,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       : TextFormField(
-                          controller: usernameController,
+                          controller: phoneNumberController,
                           decoration: const InputDecoration(
-                            labelText: 'Email',
+                            labelText: 'Phone Number',
                             border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.text,
@@ -177,7 +178,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   //Category input field
                   Platform.isIOS
                       ? CupertinoTextField(
-                          controller: usernameController,
+                          controller: categoryController,
                           placeholder: 'Category',
                           padding: const EdgeInsets.all(16.0),
                           keyboardType: TextInputType.text,
@@ -188,9 +189,32 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       : TextFormField(
-                          controller: usernameController,
+                          controller: categoryController,
                           decoration: const InputDecoration(
                             labelText: 'Category',
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.text,
+                        ),
+                  const SizedBox(height: 16.0),
+
+                  // Username input field
+                  Platform.isIOS
+                      ? CupertinoTextField(
+                          controller: emailController,
+                          placeholder: 'Email',
+                          padding: const EdgeInsets.all(16.0),
+                          keyboardType: TextInputType.text,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Color.fromARGB(255, 152, 11, 58)),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        )
+                      : TextFormField(
+                          controller: emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
                             border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.text,
@@ -267,12 +291,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           obscureText: !_isPasswordVisible,
                         ),
-                  const SizedBox(height: 30.0),
+                  const SizedBox(height: 16.0),
 
                   // Confirm Password input field
                   Platform.isIOS
                       ? CupertinoTextField(
-                          controller: passwordController,
+                          controller: confirmPasswordController,
                           placeholder: 'Confirm Password',
                           padding: const EdgeInsets.all(16.0),
                           obscureText: !_isPasswordVisible,
@@ -296,7 +320,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       : TextFormField(
-                          controller: passwordController,
+                          controller: confirmPasswordController,
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
                             border: const OutlineInputBorder(),
@@ -336,7 +360,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DashboardPage()));
+                                    builder: (context) => BusinessTypePage()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 152, 11, 58),

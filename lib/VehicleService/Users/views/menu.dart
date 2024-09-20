@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/views/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
 import 'package:salon_appointment_app/login.dart';
 
 class Menu extends StatelessWidget {
@@ -40,10 +40,7 @@ class Menu extends StatelessWidget {
             leading: const Icon(Icons.dashboard),
             title: const Text('Find a shop'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DashboardPage()),
-              );
+              Navigator.of(context).pop();
             },
           ),
           ListTile(
