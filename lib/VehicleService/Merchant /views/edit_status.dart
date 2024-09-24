@@ -126,7 +126,7 @@ class _EditStatusScreenState extends State<EditStatusScreen> {
                 const SizedBox(height: 10),
                 Stepper(
                   physics:
-                      const NeverScrollableScrollPhysics(), // Keeps the stepper scroll within the screen
+                      const NeverScrollableScrollPhysics(), 
                   currentStep:
                       _statusOptions.indexOf(_selectedStatus ?? 'Pending'),
                   onStepTapped: (step) {

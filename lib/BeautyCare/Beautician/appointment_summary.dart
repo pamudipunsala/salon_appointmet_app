@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/categories.dart';
+import 'package:salon_appointment_app/VehicleService/Users/views/appointment_history.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AppointmentSummaryPage extends StatefulWidget {
@@ -34,14 +35,29 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
     return Scaffold(
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
-              middle: const Text('Appointment Summary',
-                  style: TextStyle(color: Colors.white)),
+              middle: const Text(
+                'Appointment Summary',
+                style: TextStyle(color: Colors.white),
+              ),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
+              ),
+              trailing: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AppointmentHistory()));
+                },
+                child: const Icon(
+                  Icons.summarize,
+                  color: Colors.white,
+                ),
               ),
             )
           : AppBar(
@@ -53,6 +69,20 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(
+                    Icons.summarize,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AppointmentHistory()));
+                  },
+                )
+              ],
             ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

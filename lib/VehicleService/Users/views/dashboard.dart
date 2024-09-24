@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/VehicleService/Users/views/appointment.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/mainappointment.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/appointment_history.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/providers.dart';
 import 'package:salon_appointment_app/VehicleService/Users/views/reviews.dart';
@@ -27,10 +27,10 @@ class _UsersDashboardPageState extends State<UsersDashboardPage> {
     {
       'title': 'Book an appointment',
       'icon': Icons.note,
-      'page': AppointmentPage()
+      'page': MainAppointmentPage()
     },
     {
-      'title': 'Cutomer Comments & Review',
+      'title': 'Comments & Review',
       'icon': Icons.reviews,
       'page': ReviewDetails()
     },

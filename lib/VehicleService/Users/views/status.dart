@@ -16,6 +16,13 @@ class _AppointmentStatusState extends State<AppointmentStatus> {
   String appointmentTime = "3:00 PM";
   String appointmentStatus = "Confirmed";
 
+  final List<String> _statusOptions = [
+    'Pending',
+    'Confirmed',
+    'Completed',
+    'Cancelled'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +49,7 @@ class _AppointmentStatusState extends State<AppointmentStatus> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 20),
             // Displaying Appointment Number
             AppointmentDetailItem(
               title: "Appointment No.",
@@ -70,6 +78,31 @@ class _AppointmentStatusState extends State<AppointmentStatus> {
               valueColor: appointmentStatus == "Confirmed"
                   ? Colors.green
                   : Colors.red, // Different color for status
+            ),
+            const SizedBox(height: 60),
+            const Text(
+              'Current Status',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+            const SizedBox(height: 20),
+
+            Stepper(
+              physics: const NeverScrollableScrollPhysics(),
+              currentStep: _statusOptions.indexOf(appointmentStatus),
+              controlsBuilder: (context, details) => const SizedBox.shrink(),
+              steps: _statusOptions.map((status) {
+                return Step(
+                  title: Text(status),
+                  content: const SizedBox.shrink(),
+                  isActive: appointmentStatus == status,
+                  state: appointmentStatus == status
+                      ? StepState.complete
+                      : StepState.indexed,
+                );
+              }).toList(),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/appointment_summary.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/add_branches.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/approve_appointment.dart';
 import 'package:salon_appointment_app/VehicleService/Merchant%20/views/edit_status.dart';
@@ -23,7 +24,11 @@ class _MerchantDashboardPageState extends State<MerchantDashboardPage> {
       'icon': Icons.approval_rounded,
       'page': ApproveAppointmentScreen()
     },
-    {'title': 'Edit Status', 'icon': Icons.edit, 'page': EditStatusScreen()},
+    {
+      'title': 'Appointment Summary',
+      'icon': Icons.edit,
+      'page': AppointmentSummaryPage()
+    },
     {'title': 'Add Branches', 'icon': Icons.add, 'page': AddBranchDetails()},
     {'title': 'Profile', 'icon': Icons.people, 'page': ProfileScreenPage()},
     {'title': 'View Reviews', 'icon': Icons.reviews, 'page': ViewReviews()},

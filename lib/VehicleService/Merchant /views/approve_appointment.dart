@@ -84,83 +84,97 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
           final appointment = appointments[index];
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: SizedBox(
-              height: 150, // Set the desired height here
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 15.0), // Adjust padding as needed
-                leading: Icon(
-                  appointment['status'] == 'Approved'
-                      ? Icons.check_circle
-                      : appointment['status'] == 'Hold'
-                          ? Icons.pause_circle
-                          : appointment['status'] == 'Cancelled'
-                              ? Icons.cancel
-                              : Icons.hourglass_bottom,
-                  color: appointment['status'] == 'Approved'
-                      ? const Color.fromARGB(255, 46, 130, 48)
-                      : appointment['status'] == 'Hold'
-                          ? Colors.orange
-                          : appointment['status'] == 'Cancelled'
-                              ? Colors.red
-                              : Colors.black,
-                ),
-                title: Text(appointment['name']!),
-                subtitle: Text(
-                    'Date: ${appointment['date']}, Time: ${appointment['time']}, Location: ${appointment['location']}'),
-                trailing: appointment['status'] == 'Pending'
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => _approveAppointment(index),
-                            child: const Text('Approve'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 46, 130, 48),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 10),
-                              minimumSize: const Size(60, 30),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          ElevatedButton(
-                            onPressed: () => _holdAppointment(index),
-                            child: const Text('Hold'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 10),
-                              minimumSize: const Size(60, 30),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          ElevatedButton(
-                            onPressed: () => _cancelAppointment(index),
-                            child: const Text('Cancel'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 10),
-                              minimumSize: const Size(60, 30),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        appointment['status']!,
-                        style: TextStyle(
-                          color: appointment['status'] == 'Approved'
-                              ? const Color.fromARGB(255, 46, 130, 48)
-                              : appointment['status'] == 'Hold'
-                                  ? Colors.orange
-                                  : Colors.red,
-                        ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        appointment['status'] == 'Approved'
+                            ? Icons.check_circle
+                            : appointment['status'] == 'Hold'
+                                ? Icons.pause_circle
+                                : appointment['status'] == 'Cancelled'
+                                    ? Icons.cancel
+                                    : Icons.hourglass_bottom,
+                        color: appointment['status'] == 'Approved'
+                            ? const Color.fromARGB(255, 46, 130, 48)
+                            : appointment['status'] == 'Hold'
+                                ? Colors.orange
+                                : appointment['status'] == 'Cancelled'
+                                    ? Colors.red
+                                    : Colors.black,
                       ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(appointment['name']!),
+                          const SizedBox(height: 5),
+                          Text('Date: ${appointment['date']}'),
+                          Text('Time: ${appointment['time']}'),
+                          Text('Location: ${appointment['location']}'),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                      height: 15), // Add some space before the buttons
+                  appointment['status'] == 'Pending'
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => _approveAppointment(index),
+                              child: const Text('Approve'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 46, 130, 48),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                minimumSize: const Size(60, 30),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () => _holdAppointment(index),
+                              child: const Text('Hold'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                minimumSize: const Size(60, 30),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () => _cancelAppointment(index),
+                              child: const Text('Cancel'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                minimumSize: const Size(60, 30),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          appointment['status']!,
+                          style: TextStyle(
+                            color: appointment['status'] == 'Approved'
+                                ? const Color.fromARGB(255, 46, 130, 48)
+                                : appointment['status'] == 'Hold'
+                                    ? Colors.orange
+                                    : Colors.red,
+                          ),
+                        ),
+                ],
               ),
             ),
           );

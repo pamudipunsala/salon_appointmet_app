@@ -1,35 +1,21 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class SalonAppointmentPage extends StatefulWidget {
-  const SalonAppointmentPage({super.key});
+class AppointmentPage extends StatefulWidget {
+  const AppointmentPage({super.key});
 
   @override
-  _SalonAppointmentPageState createState() => _SalonAppointmentPageState();
+  _AppointmentPageState createState() => _AppointmentPageState();
 }
 
-class _SalonAppointmentPageState extends State<SalonAppointmentPage> {
+class _AppointmentPageState extends State<AppointmentPage> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   List<String> selectedServices = [];
   List<String> selectedLocation = [];
-
-  final List<String> services = [
-    'Haircut',
-    'Manicure',
-    'Pedicure',
-    'Massage',
-    'Facial'
-  ];
-
-  final List<String> location = [
-    'Colombo 05',
-    'Nugegoda',
-    'Maharagama',
-    'Gampaha',
-    'Kandy',
-  ];
+  List<String> selectedCategory = [];
 
   // Function to pick a date
   Future<void> _selectDate(BuildContext context) async {
@@ -57,116 +43,6 @@ class _SalonAppointmentPageState extends State<SalonAppointmentPage> {
         selectedTime = picked;
       });
     }
-  }
-
-  void _showServiceSelectionDialog() {
-    List<String> tempSelectedServices =
-        List.from(selectedServices); // Temporary list to store selections
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Services'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: services.map((service) {
-                    return CheckboxListTile(
-                      title: Text(service),
-                      value: tempSelectedServices.contains(service),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            tempSelectedServices.add(service);
-                          } else {
-                            tempSelectedServices.remove(service);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pop(); // Close the dialog without saving changes
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Save the selected services and close the dialog
-                setState(() {
-                  selectedServices = tempSelectedServices;
-                });
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-// Function to show multi-service selection dialog
-  void _showLocationSelectionDialog() {
-    List<String> tempselectedLocation = List.from(selectedLocation);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Location'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: location.map((location) {
-                    return CheckboxListTile(
-                      title: Text(location),
-                      value: tempselectedLocation.contains(location),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            tempselectedLocation.add(location);
-                          } else {
-                            tempselectedLocation.remove(location);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedLocation = tempselectedLocation;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -217,36 +93,9 @@ class _SalonAppointmentPageState extends State<SalonAppointmentPage> {
               trailing: const Icon(Icons.access_time),
               onTap: () => _selectTime(context),
             ),
-
-            ListTile(
-              title: const Text("Select Services"),
-              subtitle: Text(
-                selectedServices.isNotEmpty
-                    ? selectedServices.join(', ')
-                    : "No services selected",
-              ),
-              trailing: const Icon(Icons.arrow_drop_down),
-              onTap: _showServiceSelectionDialog,
-            ),
-            const SizedBox(height: 16),
-
-            ListTile(
-              title: const Text("Select Location"),
-              subtitle: Text(
-                selectedLocation.isNotEmpty
-                    ? selectedLocation.join(', ')
-                    : "No Location Selected",
-              ),
-              trailing: const Icon(Icons.arrow_drop_down),
-              onTap: _showLocationSelectionDialog,
-            ),
-            const SizedBox(height: 16),
-
             // Submit button
             ElevatedButton(
-              onPressed: () {
-                // Handle booking submission
-              },
+              onPressed: () {},
               child: const Text("Book Appointment"),
             ),
           ],

@@ -1,7 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/appointment.dart'; // For date formatting
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -161,7 +162,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                     color:
                                         const Color.fromARGB(255, 152, 11, 58),
                                     onPressed: () {
-                                      // Navigate to the service page or handle button press
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AppointmentPage()));
                                     },
                                     child: Text(
                                       service['name']!,
@@ -176,7 +181,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                           color: Colors.white, width: 2),
                                     ),
                                     onPressed: () {
-                                      // Handle service button press
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AppointmentPage()));
                                     },
                                     child: Text(
                                       service['name']!,
