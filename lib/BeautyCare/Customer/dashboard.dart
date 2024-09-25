@@ -1,9 +1,11 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/customerHistory.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/mainAppointment.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/offers.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/salons.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/shops.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class CustomerDashboardPage extends StatefulWidget {
@@ -21,8 +23,14 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
       'icon': Icons.book,
       'page': MainAppointmentPage()
     },
-    {'title': 'Salons', 'icon': Icons.store, 'page': SalonBranchesPage()},
+    {'title': 'Shops', 'icon': Icons.store, 'page': ShopsPage()},
     {'title': 'Offers', 'icon': Icons.local_offer, 'page': OffersPage()},
+    {
+      'title': 'Comments & Review',
+      'icon': Icons.reviews,
+      'page': ReviewDetails()
+    },
+    {'title': 'History', 'icon': Icons.history, 'page': CustomerHistory()},
   ];
 
   @override

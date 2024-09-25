@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/edit_status.dart';
 
 class AppointmentHistory extends StatefulWidget {
   const AppointmentHistory({super.key});
@@ -151,80 +152,89 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: filteredCustomers.length,
+                  itemCount: customers.length,
                   itemBuilder: (context, index) {
-                    final customer = filteredCustomers[index];
+                    final customer = customers[index];
                     final status = customer['status'] ?? 'Unknown';
 
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Customer details
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Name: ${customer['name']!}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate to the details screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditStatusScreen(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Name: ${customer['name']!}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Date: ${customer['date']!}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black54,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Date: ${customer['date']!}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Time: ${customer['time']!}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black54,
+                                  Text(
+                                    'Time: ${customer['time']!}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Contact: ${customer['phone']!}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black54,
+                                  Text(
+                                    'Contact: ${customer['phone']!}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Branch: ${customer['branch']!}', 
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black54,
+                                  Text(
+                                    'Branch: ${customer['branch']!}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            // Status instead of edit button
-                            Text(
-                              status,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: status == 'Approved'
-                                    ? Colors.green
-                                    : status == 'Hold'
-                                        ? Colors.orange
-                                        : Colors.red,
+                                ],
                               ),
-                            ),
-                          ],
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: status == 'Approved'
+                                      ? Colors.green
+                                      : status == 'Hold'
+                                          ? Colors.orange
+                                          : Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

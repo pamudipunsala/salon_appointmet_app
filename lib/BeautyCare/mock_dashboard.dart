@@ -1,23 +1,22 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/dashboard.dart';
-import 'package:salon_appointment_app/VehicleService/Merchant%20/views/dashboard.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/dashboard.dart';
 import 'package:salon_appointment_app/menu.dart';
 
-class BeautyCareMockDashboardPage extends StatefulWidget {
-  const BeautyCareMockDashboardPage({super.key});
+class MockDashboardPage extends StatefulWidget {
+  const MockDashboardPage({super.key});
 
   @override
-  _BeautyCareMockDashboardPageState createState() => _BeautyCareMockDashboardPageState();
+  _MockDashboardPageState createState() => _MockDashboardPageState();
 }
 
-class _BeautyCareMockDashboardPageState extends State<BeautyCareMockDashboardPage> {
+class _MockDashboardPageState extends State<MockDashboardPage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Beauticain', 'page': BeauticianDashboardPage()},
-    {'title': 'Customer', 'page': CustomerDashboardPage()},
+    {'title': 'Merchant', 'page': BeauticianDashboardPage()},
+    {'title': 'Users', 'page': CustomerDashboardPage()},
   ];
 
   @override

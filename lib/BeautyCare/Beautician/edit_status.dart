@@ -41,7 +41,7 @@ class _EditStatusScreenState extends State<EditStatusScreen> {
     return Scaffold(
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
-              middle: const Text('Appointment Tracking',
+              middle: const Text('Edit Tracking Details',
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
               leading: CupertinoNavigationBarBackButton(
@@ -52,7 +52,7 @@ class _EditStatusScreenState extends State<EditStatusScreen> {
               ),
             )
           : AppBar(
-              title: const Text('Appointment Tracking',
+              title: const Text('Edit Tracking',
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
               iconTheme: const IconThemeData(color: Colors.white),
@@ -125,8 +125,7 @@ class _EditStatusScreenState extends State<EditStatusScreen> {
                 ),
                 const SizedBox(height: 10),
                 Stepper(
-                  physics:
-                      const NeverScrollableScrollPhysics(), 
+                  physics: const NeverScrollableScrollPhysics(),
                   currentStep:
                       _statusOptions.indexOf(_selectedStatus ?? 'Pending'),
                   onStepTapped: (step) {

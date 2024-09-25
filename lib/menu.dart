@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/edit_status.dart';
 import 'package:salon_appointment_app/login.dart';
 
 class Menu extends StatelessWidget {
@@ -47,6 +48,16 @@ class Menu extends StatelessWidget {
             leading: const Icon(Icons.report),
             title: const Text('Reports'),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.people),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditStatusScreen()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.logout),

@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class AddSalonBranchesPage extends StatefulWidget {
-  const AddSalonBranchesPage({super.key});
+class AddShopsPage extends StatefulWidget {
+  const AddShopsPage({super.key});
 
   @override
-  _AddSalonBranchesPageState createState() => _AddSalonBranchesPageState();
+  _AddShopsPageState createState() => _AddShopsPageState();
 }
 
-class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
+class _AddShopsPageState extends State<AddShopsPage> {
   final List<Map<String, dynamic>> services = [
-    {'name': 'Colombo 05', 'image': 'assets/images/img10.jpeg'},
-    {'name': 'Nugegoda', 'image': 'assets/images/img11.jpeg'},
-    {'name': 'Maharagama', 'image': 'assets/images/img12.jpeg'},
-    {'name': 'Gampaha', 'image': 'assets/images/img13.jpeg'},
-    {'name': 'Kandy', 'image': 'assets/images/img14.jpeg'},
+    {'name': 'Salon CB', 'image': 'assets/images/img10.jpeg'},
+    {'name': 'Salon Neesha Manahari', 'image': 'assets/images/img11.jpeg'},
+    {'name': 'Brides by Udara Malshan', 'image': 'assets/images/img12.jpeg'},
+    {'name': 'Salon Boneetha', 'image': 'assets/images/img13.jpeg'},
+    {'name': 'The Blushing Nor', 'image': 'assets/images/img14.jpeg'},
   ];
 
   List<Map<String, dynamic>> _filteredServices = [];
@@ -53,7 +53,7 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
     } else if (Platform.isIOS) {
       permissionStatus = await Permission.photos.request();
     } else {
-      return; 
+      return;
     }
 
     if (permissionStatus.isGranted) {
@@ -70,25 +70,25 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
       // Optionally show a message or redirect to app settings
       if (await Permission.storage.isPermanentlyDenied ||
           await Permission.photos.isPermanentlyDenied) {
-        openAppSettings(); 
+        openAppSettings();
       }
     }
   }
 
   void _showAddSalonDialog(BuildContext context) {
-    final TextEditingController _salonNameController = TextEditingController();
+    final TextEditingController _shopNameController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Platform.isIOS
             ? CupertinoAlertDialog(
-                title: const Text('Add New Salon'),
+                title: const Text('Add New Shops'),
                 content: Column(
                   children: [
                     CupertinoTextField(
-                      controller: _salonNameController,
-                      placeholder: 'Enter salon name',
+                      controller: _shopNameController,
+                      placeholder: 'Enter Shops name',
                     ),
                     const SizedBox(height: 10),
                     CupertinoButton(
@@ -110,21 +110,21 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                   CupertinoDialogAction(
                     child: const Text('Add'),
                     onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
+                      _addShops(_shopNameController.text, _imagePath);
                       Navigator.of(context).pop();
                     },
                   ),
                 ],
               )
             : AlertDialog(
-                title: const Text('Add New Salon'),
+                title: const Text('Add New Shops'),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _salonNameController,
+                      controller: _shopNameController,
                       decoration: const InputDecoration(
-                        labelText: 'Enter salon name',
+                        labelText: 'Enter Shops name',
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -147,7 +147,7 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
+                      _addShops(_shopNameController.text, _imagePath);
                       Navigator.of(context).pop();
                     },
                     child: const Text('Add'),
@@ -158,7 +158,7 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
     );
   }
 
-  void _addSalon(String name, String? imagePath) {
+  void _addShops(String name, String? imagePath) {
     if (name.isNotEmpty && imagePath != null) {
       setState(() {
         services.add({'name': name, 'image': imagePath});

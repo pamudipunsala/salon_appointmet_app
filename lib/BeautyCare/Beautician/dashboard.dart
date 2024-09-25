@@ -2,11 +2,14 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/add_offers.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_salons.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_branches.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/add_services.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/add_shops.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/appointment_summary.dart';
 import 'package:salon_appointment_app/BeautyCare/Beautician/customers.dart';
-import 'package:salon_appointment_app/VehicleService/Merchant%20/views/approve_appointment.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/approve_appointment.dart';
+import 'package:salon_appointment_app/BeautyCare/Beautician/view_reviews.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class BeauticianDashboardPage extends StatefulWidget {
@@ -19,16 +22,13 @@ class BeauticianDashboardPage extends StatefulWidget {
 
 class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
   final List<Map<String, dynamic>> dashboardItems = [
+    {'title': 'Add Shops', 'icon': Icons.shop, 'page': AddShopsPage()},
     {
-      'title': 'Add Salons',
+      'title': 'Add Branches',
       'icon': Icons.store,
       'page': AddSalonBranchesPage()
     },
-    {
-      'title': 'Add Customers',
-      'icon': Icons.people,
-      'page': CustomerDetailsPage()
-    },
+    {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
     {
       'title': 'Add Services',
       'icon': Icons.room_service,
@@ -44,6 +44,11 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
       'title': 'Approve Appointments',
       'icon': Icons.calendar_today,
       'page': ApproveAppointmentScreen()
+    },
+    {
+      'title': 'Comments & Review',
+      'icon': Icons.reviews,
+      'page': ViewReviews()
     },
   ];
 

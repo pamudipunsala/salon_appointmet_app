@@ -3,14 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
 
-class SalonBranchesPage extends StatefulWidget {
-  const SalonBranchesPage({super.key});
+class BranchesPage extends StatefulWidget {
+  const BranchesPage({super.key});
 
   @override
-  _SalonBranchesPageState createState() => _SalonBranchesPageState();
+  _BranchesPageState createState() => _BranchesPageState();
 }
 
-class _SalonBranchesPageState extends State<SalonBranchesPage> {
+class _BranchesPageState extends State<BranchesPage> {
   final List<Map<String, dynamic>> services = [
     {'name': 'Colombo 05', 'image': 'assets/images/img10.jpeg'},
     {'name': 'Nugegoda', 'image': 'assets/images/img11.jpeg'},
@@ -153,7 +153,11 @@ class _SalonBranchesPageState extends State<SalonBranchesPage> {
                                     color:
                                         const Color.fromARGB(255, 152, 11, 58),
                                     onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ServicesPage()));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ServicesPage()));
                                     },
                                     child: Text(
                                       service['name']!,
@@ -167,7 +171,13 @@ class _SalonBranchesPageState extends State<SalonBranchesPage> {
                                       side: const BorderSide(
                                           color: Colors.white, width: 2),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ServicesPage()));
+                                    },
                                     child: Text(
                                       service['name']!,
                                       style: const TextStyle(
