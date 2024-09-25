@@ -1,15 +1,15 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_offers.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_branches.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_services.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_shops.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/appointment_summary.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/customers.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/approve_appointment.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/view_reviews.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/add_branches.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/add_offers.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/add_services.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/add_shops.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/appointment_summary.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/approve_appointment.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/customers.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/view_reviews.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class BeauticianDashboardPage extends StatefulWidget {

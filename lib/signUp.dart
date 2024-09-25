@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
 import 'package:salon_appointment_app/type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

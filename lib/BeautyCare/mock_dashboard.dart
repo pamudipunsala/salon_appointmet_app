@@ -1,8 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/dashboard.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/dashboard.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/dashboard.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class MockDashboardPage extends StatefulWidget {

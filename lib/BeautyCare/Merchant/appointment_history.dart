@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/edit_status.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/edit_status.dart';
 
 class AppointmentHistory extends StatefulWidget {
   const AppointmentHistory({super.key});

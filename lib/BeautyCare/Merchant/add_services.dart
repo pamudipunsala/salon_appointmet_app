@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:salon_appointment_app/BeautyCare/Beautician/add_categories.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/categories.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/add_categories.dart';
 
 class AddServicesPage extends StatefulWidget {
   const AddServicesPage({super.key});
