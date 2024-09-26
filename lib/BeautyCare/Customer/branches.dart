@@ -62,7 +62,7 @@ class _BranchesPageState extends State<BranchesPage> {
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
               middle:
-                  const Text('Salons', style: TextStyle(color: Colors.white)),
+                  const Text('Branches', style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
@@ -73,7 +73,7 @@ class _BranchesPageState extends State<BranchesPage> {
             )
           : AppBar(
               title:
-                  const Text('Salons', style: TextStyle(color: Colors.white)),
+                  const Text('Branches', style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
               iconTheme: const IconThemeData(color: Colors.white),
             ),

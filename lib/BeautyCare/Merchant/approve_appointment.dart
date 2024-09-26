@@ -11,6 +11,8 @@ class ApproveAppointmentScreen extends StatefulWidget {
 }
 
 class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
   final List<Map<String, String>> appointments = [
     {
       'name': 'John Doe',
@@ -59,23 +61,42 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
     print("Appointment cancelled: ${appointments[index]['name']}");
   }
 
-  // Adjust time function
   Future<void> _adjustTime(int index) async {
-    TimeOfDay initialTime = TimeOfDay.now(); // Default to current time
-
-    TimeOfDay? newTime = await showTimePicker(
-      context: context,
-      initialTime: initialTime,
-    );
-
-    if (newTime != null) {
-      setState(() {
-        // Update the time in the appointment
-        final formattedTime = newTime.format(context);
-        appointments[index]['time'] = formattedTime;
-      });
-      print(
-          "Time adjusted for ${appointments[index]['name']}: ${appointments[index]['time']}");
+    if (Platform.isAndroid) {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (picked != null && picked != selectedTime) {
+        setState(() {
+          selectedTime = picked;
+          // Save the adjusted time back into the appointment
+          appointments[index]['time'] = picked.format(context);
+        });
+      }
+    } else if (Platform.isIOS) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) {
+          return Container(
+            height: MediaQuery.of(context).copyWith().size.height / 3,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.time,
+              initialDateTime: DateTime.now(),
+              onDateTimeChanged: (DateTime newDateTime) {
+                setState(() {
+                  selectedTime = TimeOfDay(
+                    hour: newDateTime.hour,
+                    minute: newDateTime.minute,
+                  );
+                  // Save the adjusted time back into the appointment
+                  appointments[index]['time'] = selectedTime!.format(context);
+                });
+              },
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -148,56 +169,79 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        ElevatedButton(
-                          onPressed: () => _adjustTime(index),
-                          child: const Text('Adjust Time'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 10),
-                            minimumSize: const Size(60, 30),
-                          ),
-                        ),
+                        Platform.isIOS
+                            ? CupertinoButton(
+                                color: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                onPressed: () => _adjustTime(index),
+                                child: const Text('Adjust Time'),
+                              )
+                            : ElevatedButton(
+                                onPressed: () => _adjustTime(index),
+                                child: const Text('Adjust Time'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 10),
+                                ),
+                              ),
                         const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => _approveAppointment(index),
-                          child: const Text('Approve'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 46, 130, 48),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 10),
-                            minimumSize: const Size(60, 30),
-                          ),
-                        ),
+                        Platform.isIOS
+                            ? CupertinoButton(
+                                color: const Color.fromARGB(255, 46, 130, 48),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                onPressed: () => _approveAppointment(index),
+                                child: const Text('Approve'),
+                              )
+                            : ElevatedButton(
+                                onPressed: () => _approveAppointment(index),
+                                child: const Text('Approve'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 46, 130, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 10),
+                                ),
+                              ),
                         const SizedBox(width: 10),
-                        if (appointment['status'] == 'Pending') ...[
-                          ElevatedButton(
-                            onPressed: () => _holdAppointment(index),
-                            child: const Text('Hold'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 6, horizontal: 10),
-                              minimumSize: const Size(60, 30),
-                            ),
-                          ),
-                        ],
+                        if (appointment['status'] == 'Pending')
+                          Platform.isIOS
+                              ? CupertinoButton(
+                                  color: Colors.orange,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 10),
+                                  onPressed: () => _holdAppointment(index),
+                                  child: const Text('Hold'),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () => _holdAppointment(index),
+                                  child: const Text('Hold'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 10),
+                                  ),
+                                ),
                         const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => _cancelAppointment(index),
-                          child: const Text('Cancel'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 10),
-                            minimumSize: const Size(60, 30),
-                          ),
-                        ),
+                        Platform.isIOS
+                            ? CupertinoButton(
+                                color: Colors.red,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                onPressed: () => _cancelAppointment(index),
+                                child: const Text('Cancel'),
+                              )
+                            : ElevatedButton(
+                                onPressed: () => _cancelAppointment(index),
+                                child: const Text('Cancel'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 10),
+                                ),
+                              ),
                       ],
                     ),
                   ] else ...[

@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class MainAppointmentPage extends StatefulWidget {
@@ -11,11 +10,17 @@ class MainAppointmentPage extends StatefulWidget {
 }
 
 class _MainAppointmentPageState extends State<MainAppointmentPage> {
+  DateTime? _startDate;
+  DateTime? _endDate;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   List<String> selectedServices = [];
-  List<String> selectedLocation = [];
-  List<String> selectedCategory = [];
+  List<String> selectedLocations = [];
+  List<String> selectedCategories = [];
+
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   final List<String> services = [
     'Haircut',
@@ -33,7 +38,7 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
     'Whitening Treatment'
   ];
 
-  final List<String> location = [
+  final List<String> locations = [
     'Colombo 05',
     'Nugegoda',
     'Maharagama',
@@ -43,192 +48,388 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
 
   // Function to pick a date
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
+    final DateTime initialDate = DateTime.now();
+    final DateTime firstDate = DateTime(2000);
+    final DateTime lastDate = DateTime(2100);
+
+    final DateTime? pickedDate = await (Platform.isIOS
+        ? showCupertinoModalPopup(
+            context: context,
+            builder: (context) {
+              return Container(
+                height: 250,
+                color: Colors.white,
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: initialDate,
+                  onDateTimeChanged: (dateTime) {
+                    setState(() {
+                      selectedDate = dateTime;
+                      _dateController.text =
+                          "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
+                    });
+                  },
+                ),
+              );
+            },
+          )
+        : showDatePicker(
+            context: context,
+            initialDate: initialDate,
+            firstDate: firstDate,
+            lastDate: lastDate,
+          ));
+
+    if (pickedDate != null) {
       setState(() {
-        selectedDate = picked;
+        selectedDate = pickedDate;
+        _dateController.text =
+            "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
       });
     }
   }
 
   // Function to pick a time
   Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null && picked != selectedTime) {
-      setState(() {
-        selectedTime = picked;
-      });
+    if (Platform.isAndroid) {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (picked != null && picked != selectedTime) {
+        setState(() {
+          selectedTime = picked;
+        });
+      }
+    } else if (Platform.isIOS) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) {
+          return Container(
+            height: MediaQuery.of(context).copyWith().size.height / 3,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.time,
+              initialDateTime: DateTime.now(),
+              onDateTimeChanged: (DateTime newDateTime) {
+                setState(() {
+                  selectedTime = TimeOfDay(
+                    hour: newDateTime.hour,
+                    minute: newDateTime.minute,
+                  );
+                });
+              },
+            ),
+          );
+        },
+      );
     }
   }
 
   void _showServiceSelectionDialog() {
-    List<String> tempSelectedServices =
-        List.from(selectedServices); // Temporary list to store selections
+    List<String> tempSelectedServices = List.from(selectedServices);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Services'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: services.map((service) {
-                    return CheckboxListTile(
-                      title: Text(service),
-                      value: tempSelectedServices.contains(service),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            tempSelectedServices.add(service);
-                          } else {
-                            tempSelectedServices.remove(service);
-                          }
-                        });
-                      },
+        return Platform.isIOS
+            ? CupertinoAlertDialog(
+                title: const Text('Select Services'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: services.map((service) {
+                          bool isSelected =
+                              tempSelectedServices.contains(service);
+                          return Row(
+                            children: [
+                              Expanded(child: Text(service)),
+                              CupertinoSwitch(
+                                value: isSelected,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    if (value) {
+                                      tempSelectedServices.add(service);
+                                    } else {
+                                      tempSelectedServices.remove(service);
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     );
-                  }).toList(),
+                  },
                 ),
+                actions: [
+                  CupertinoDialogAction(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: const Text('Done'),
+                    onPressed: () {
+                      setState(() {
+                        selectedServices = tempSelectedServices;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              )
+            : AlertDialog(
+                title: const Text('Select Services'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: services.map((service) {
+                          return CheckboxListTile(
+                            title: Text(service),
+                            value: tempSelectedServices.contains(service),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  tempSelectedServices.add(service);
+                                } else {
+                                  tempSelectedServices.remove(service);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedServices = tempSelectedServices;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
               );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pop(); // Close the dialog without saving changes
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Save the selected services and close the dialog
-                setState(() {
-                  selectedServices = tempSelectedServices;
-                });
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
       },
     );
   }
 
   void _showCategorySelectionDialog() {
-    List<String> tempSelectedCategory =
-        List.from(selectedCategory); // Temporary list to store selections
+    List<String> tempSelectedCategories = List.from(selectedCategories);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Category'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: category.map((category) {
-                    return CheckboxListTile(
-                      title: Text(category),
-                      value: tempSelectedCategory.contains(category),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            tempSelectedCategory.add(category);
-                          } else {
-                            tempSelectedCategory.remove(category);
-                          }
-                        });
-                      },
+        return Platform.isIOS
+            ? CupertinoAlertDialog(
+                title: const Text('Select Category'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: category.map((category) {
+                          bool isSelected =
+                              tempSelectedCategories.contains(category);
+                          return Row(
+                            children: [
+                              Expanded(child: Text(category)),
+                              CupertinoSwitch(
+                                value: isSelected,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    if (value) {
+                                      tempSelectedCategories.add(category);
+                                    } else {
+                                      tempSelectedCategories.remove(category);
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     );
-                  }).toList(),
+                  },
                 ),
+                actions: [
+                  CupertinoDialogAction(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: const Text('Done'),
+                    onPressed: () {
+                      setState(() {
+                        selectedCategories = tempSelectedCategories;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              )
+            : AlertDialog(
+                title: const Text('Select categorys'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: category.map((category) {
+                          return CheckboxListTile(
+                            title: Text(category),
+                            value: tempSelectedCategories.contains(category),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  tempSelectedCategories.add(category);
+                                } else {
+                                  tempSelectedCategories.remove(category);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedCategories = tempSelectedCategories;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
               );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedCategory = tempSelectedCategory;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
       },
     );
   }
 
   void _showLocationSelectionDialog() {
-    String? tempSelectedLocation = selectedLocation.isNotEmpty
-        ? selectedLocation.first
-        : null; // Temporarily store the currently selected location
+    List<String> tempSelectedLocations = List.from(selectedLocations);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Location'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: location.map((location) {
-                    return RadioListTile<String>(
-                      title: Text(location),
-                      value: location,
-                      groupValue: tempSelectedLocation,
-                      onChanged: (String? value) {
-                        setState(() {
-                          tempSelectedLocation = value;
-                        });
-                      },
+        return Platform.isIOS
+            ? CupertinoAlertDialog(
+                title: const Text('Select Services'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: locations.map((locations) {
+                          bool isSelected =
+                              tempSelectedLocations.contains(locations);
+                          return Row(
+                            children: [
+                              Expanded(child: Text(locations)),
+                              CupertinoSwitch(
+                                value: isSelected,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    if (value) {
+                                      tempSelectedLocations.add(locations);
+                                    } else {
+                                      tempSelectedLocations.remove(locations);
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     );
-                  }).toList(),
+                  },
                 ),
+                actions: [
+                  CupertinoDialogAction(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: const Text('Done'),
+                    onPressed: () {
+                      setState(() {
+                        selectedLocations = tempSelectedLocations;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              )
+            : AlertDialog(
+                title: const Text('Select Location'),
+                content: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: locations.map((locations) {
+                          return CheckboxListTile(
+                            title: Text(locations),
+                            value: tempSelectedLocations.contains(locations),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  tempSelectedLocations.add(locations);
+                                } else {
+                                  tempSelectedLocations.remove(locations);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedServices = tempSelectedLocations;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Done'),
+                  ),
+                ],
               );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedLocation = tempSelectedLocation != null
-                      ? [tempSelectedLocation!]
-                      : [];
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
       },
     );
   }
@@ -282,6 +483,7 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
               onTap: () => _selectTime(context),
             ),
 
+            // Service selection field
             ListTile(
               title: const Text("Select Services"),
               subtitle: Text(
@@ -292,39 +494,48 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
               trailing: const Icon(Icons.arrow_drop_down),
               onTap: _showServiceSelectionDialog,
             ),
-            const SizedBox(height: 16),
 
             ListTile(
               title: const Text("Select Category"),
               subtitle: Text(
-                selectedCategory.isNotEmpty
-                    ? selectedCategory.join(', ')
-                    : "No category selected",
+                selectedCategories.isNotEmpty
+                    ? selectedCategories.join(', ')
+                    : "No categories selected",
               ),
               trailing: const Icon(Icons.arrow_drop_down),
               onTap: _showCategorySelectionDialog,
             ),
-            const SizedBox(height: 16),
 
             ListTile(
               title: const Text("Select Location"),
               subtitle: Text(
-                selectedLocation.isNotEmpty
-                    ? selectedLocation.join(', ')
-                    : "No Location Selected",
+                selectedLocations.isNotEmpty
+                    ? selectedLocations.join(', ')
+                    : "No location selected",
               ),
               trailing: const Icon(Icons.arrow_drop_down),
               onTap: _showLocationSelectionDialog,
             ),
-            const SizedBox(height: 16),
 
+            SizedBox(height: 40),
             // Submit button
-            ElevatedButton(
-              onPressed: () {
-                // Handle booking submission
-              },
-              child: const Text("Book Appointment"),
-            ),
+            Platform.isIOS
+                ? CupertinoButton(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 22.0),
+                    color: const Color.fromARGB(255, 152, 11, 58),
+                    onPressed: () {},
+                    child: const Text(
+                      "Book Appointment",
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed: () {
+                      // Handle booking submission
+                    },
+                    child: const Text("Book Appointment"),
+                  ),
           ],
         ),
       ),

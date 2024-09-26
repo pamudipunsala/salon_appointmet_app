@@ -15,8 +15,12 @@ class MockDashboardPage extends StatefulWidget {
 class _MockDashboardPageState extends State<MockDashboardPage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Merchant', 'page': BeauticianDashboardPage()},
-    {'title': 'Users', 'page': CustomerDashboardPage()},
+    {
+      'title': 'Merchant',
+      'icon': Icons.gpp_good_sharp,
+      'page': BeauticianDashboardPage()
+    },
+    {'title': 'Users', 'icon': Icons.people, 'page': CustomerDashboardPage()},
   ];
 
   @override
@@ -27,24 +31,19 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
     return Scaffold(
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
-              middle: const Text('Beauty Care Mock Dashboard',
+              middle: const Text('Select User Role',
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(CupertinoIcons.bars, color: Colors.white),
-                  );
+              leading: CupertinoNavigationBarBackButton(
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             )
           : AppBar(
               title: const Text(
-                'Beauty Care Mock Dashboard',
+                'Select User Role',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
@@ -52,7 +51,6 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
                 color: Colors.white,
               ),
             ),
-      drawer: Menu(),
       body: Stack(
         children: [
           // Background image

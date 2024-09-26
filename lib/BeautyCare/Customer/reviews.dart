@@ -58,17 +58,28 @@ class _ReviewDetailsState extends State<ReviewDetails> {
             const Text("Rate this service:"),
             Row(
               children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    Icons.star,
-                    color: index < _rating ? Colors.yellow : Colors.grey,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _rating = index + 1.0;
-                    });
-                  },
-                );
+                return Platform.isIOS
+                    ? CupertinoButton(
+                        child: Icon(
+                          CupertinoIcons.star_fill,
+                          color: index < _rating ? Colors.yellow : Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _rating = index + 1.0;
+                          });
+                        })
+                    : IconButton(
+                        icon: Icon(
+                          Icons.star,
+                          color: index < _rating ? Colors.yellow : Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _rating = index + 1.0;
+                          });
+                        },
+                      );
               }),
             ),
             const SizedBox(height: 16),
@@ -85,10 +96,22 @@ class _ReviewDetailsState extends State<ReviewDetails> {
 
             // Submit button
             Center(
-              child: ElevatedButton(
-                onPressed: _submitReview,
-                child: const Text('Submit Review'),
-              ),
+              child: Platform.isIOS
+                  ? CupertinoButton(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 22.0),
+                      color: const Color.fromARGB(255, 152, 11, 58),
+                      onPressed: _submitReview,
+                      child: const Text('Submit Review'),
+                    )
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+                        side: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                      onPressed: _submitReview,
+                      child: const Text('Submit Review'),
+                    ),
             ),
           ],
         ),

@@ -11,7 +11,6 @@ class AppointmentHistory extends StatefulWidget {
 }
 
 class _AppointmentHistoryState extends State<AppointmentHistory> {
-  // List of customers with names, phone numbers, statuses, and branches
   final List<Map<String, String>> customers = [
     {
       'name': 'John Doe',
@@ -45,27 +44,10 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
       'branch': 'Kandy',
       'status': 'Approved'
     },
-    {
-      'name': 'John Doe',
-      'date': '20.09.2024',
-      'time': '08.30 a.m.',
-      'phone': '0773456789',
-      'branch': 'Colombo 06',
-      'status': 'Approved'
-    },
-    {
-      'name': 'Jane Smith',
-      'date': '20.09.2024',
-      'time': '10.30 a.m.',
-      'phone': '0783456678',
-      'branch': 'Maharagama',
-      'status': 'Hold'
-    },
   ];
 
   String? selectedStatus;
   String? selectedBranch;
-  String branchSearchText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +59,6 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
       return matchesStatus && matchesBranch;
     }).toList();
 
-    // Get unique branch names for the dropdown
     final branches =
         customers.map((customer) => customer['branch']).toSet().toList();
 
@@ -124,42 +105,52 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                       ),
                     ],
                   ),
-                  child: DropdownButton<String?>(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    value: selectedStatus,
-                    hint: const Text('Filter by Status'),
-                    icon: const Icon(Icons.arrow_downward),
-                    isExpanded: true,
-                    style: const TextStyle(color: Colors.black),
-                    underline: Container(
-                      height: 2,
-                      color: const Color.fromARGB(255, 152, 11, 58),
-                    ),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedStatus = newValue;
-                      });
-                    },
-                    items: <String>['Approved', 'Hold', 'Cancelled', 'All']
-                        .map<DropdownMenuItem<String?>>((String value) {
-                      return DropdownMenuItem<String?>(
-                        value: value == 'All' ? null : value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
+                  child: Platform.isIOS
+                      ? CupertinoButton(
+                          onPressed: () => _showStatusPicker(context),
+                          child: Text(
+                            selectedStatus ?? 'Filter by Status',
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        )
+                      : DropdownButton<String?>(
+                          value: selectedStatus,
+                          hint: const Text('Filter by Status'),
+                          icon: const Icon(Icons.arrow_downward),
+                          isExpanded: true,
+                          style: const TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: const Color.fromARGB(255, 152, 11, 58),
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedStatus = newValue;
+                            });
+                          },
+                          items: <String>[
+                            'Approved',
+                            'Hold',
+                            'Cancelled',
+                            'All'
+                          ].map<DropdownMenuItem<String?>>((String value) {
+                            return DropdownMenuItem<String?>(
+                              value: value == 'All' ? null : value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                 ),
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: customers.length,
+                  itemCount: filteredCustomers.length, // Use filtered list
                   itemBuilder: (context, index) {
-                    final customer = customers[index];
+                    final customer = filteredCustomers[index];
                     final status = customer['status'] ?? 'Unknown';
 
                     return GestureDetector(
                       onTap: () {
-                        // Navigate to the details screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -244,6 +235,33 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showStatusPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 250,
+        color: Colors.white,
+        child: CupertinoPicker(
+          onSelectedItemChanged: (int index) {
+            setState(() {
+              selectedStatus = ['Approved', 'Hold', 'Cancelled', 'All'][index];
+              if (selectedStatus == 'All') {
+                selectedStatus = null;
+              }
+            });
+          },
+          itemExtent: 32.0,
+          children: const [
+            Text('Approved'),
+            Text('Hold'),
+            Text('Cancelled'),
+            Text('All'),
+          ],
+        ),
       ),
     );
   }

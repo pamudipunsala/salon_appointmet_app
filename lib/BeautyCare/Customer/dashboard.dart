@@ -6,7 +6,6 @@ import 'package:salon_appointment_app/BeautyCare/Customer/mainAppointment.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/offers.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/shops.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
-import 'package:salon_appointment_app/menu.dart';
 
 class CustomerDashboardPage extends StatefulWidget {
   const CustomerDashboardPage({super.key});
@@ -44,15 +43,10 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
               middle: const Text('Dashboard',
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(CupertinoIcons.bars, color: Colors.white),
-                  );
+              leading: CupertinoNavigationBarBackButton(
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             )
@@ -66,7 +60,6 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
                 color: Colors.white,
               ),
             ),
-      drawer: Menu(),
       body: Stack(
         children: [
           // Background image
@@ -99,7 +92,13 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => item['page']),
+                      Platform.isIOS
+                          ? CupertinoPageRoute(
+                              builder: (context) => item['page'],
+                            )
+                          : MaterialPageRoute(
+                              builder: (context) => item['page'],
+                            ),
                     );
                   },
                   child: Container(

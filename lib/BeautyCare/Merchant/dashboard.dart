@@ -63,15 +63,10 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
               middle: const Text('Dashboard',
                   style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 152, 11, 58),
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: const Icon(CupertinoIcons.bars, color: Colors.white),
-                  );
+              leading: CupertinoNavigationBarBackButton(
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
               ),
             )
@@ -85,7 +80,6 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
                 color: Colors.white,
               ),
             ),
-      drawer: Menu(),
       body: Stack(
         children: [
           // Background image

@@ -145,20 +145,34 @@ class _EditStatusScreenState extends State<EditStatusScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Handle form submission logic here
-                      print(
-                          "Appointment edited: Name: ${_nameController.text}, Status: $_selectedStatus");
-                    }
-                  },
-                  child: const Text('Save Changes'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 152, 11, 58),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
+                Platform.isIOS
+                    ? CupertinoButton(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 22.0),
+                        color: const Color.fromARGB(255, 152, 11, 58),
+                        child: const Text('Save Changes'),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Handle form submission logic here
+                            print(
+                                "Appointment edited: Name: ${_nameController.text}, Status: $_selectedStatus");
+                          }
+                        })
+                    : ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Handle form submission logic here
+                            print(
+                                "Appointment edited: Name: ${_nameController.text}, Status: $_selectedStatus");
+                          }
+                        },
+                        child: const Text('Save Changes'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 152, 11, 58),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
               ],
             ),
           ),

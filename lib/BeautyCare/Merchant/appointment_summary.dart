@@ -167,8 +167,7 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
               },
-              calendarStyle: CalendarStyle(
-                // Customize the event markers and the selected day
+              calendarStyle: const CalendarStyle(
                 markerDecoration: BoxDecoration(
                   color: Color.fromARGB(255, 152, 11, 58),
                   shape: BoxShape.circle,

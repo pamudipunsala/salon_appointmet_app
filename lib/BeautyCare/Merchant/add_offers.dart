@@ -151,21 +151,37 @@ class _AddOffersPageState extends State<AddOffersPage> {
                     if (_imagePath != null) Text('Image selected: $_imagePath'),
                   ],
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Add'),
-                  ),
-                ],
+                actions: Platform.isIOS
+                    ? [
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            _addSalon(_salonNameController.text, _imagePath);
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ]
+                    : [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _addSalon(_salonNameController.text, _imagePath);
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
               );
       },
     );
@@ -327,9 +343,9 @@ class _AddOffersPageState extends State<AddOffersPage> {
                                   onPressed: () {
                                     // Handle product button press
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'Apply Now',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
                                     ),
