@@ -107,7 +107,7 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
           ? CupertinoNavigationBar(
               middle: const Text('Manage Appointments',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -118,149 +118,169 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
           : AppBar(
               title: const Text('Manage Appointments',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
-      body: ListView.builder(
-        itemCount: appointments.length,
-        itemBuilder: (context, index) {
-          final appointment = appointments[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background/bg6.jpg', // Replace with your image path
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Semi-transparent overlay for readability
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
+            ),
+          ),
+          ListView.builder(
+            itemCount: appointments.length,
+            itemBuilder: (context, index) {
+              final appointment = appointments[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                color: Colors.white
+                    .withOpacity(0.8), // Slight transparency for the card
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        appointment['status'] == 'Approved'
-                            ? Icons.check_circle
-                            : appointment['status'] == 'Hold'
-                                ? Icons.pause_circle
-                                : appointment['status'] == 'Cancelled'
-                                    ? Icons.cancel
-                                    : Icons.hourglass_bottom,
-                        color: appointment['status'] == 'Approved'
-                            ? const Color.fromARGB(255, 46, 130, 48)
-                            : appointment['status'] == 'Hold'
-                                ? Colors.orange
-                                : appointment['status'] == 'Cancelled'
-                                    ? Colors.red
-                                    : Colors.black,
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Text(appointment['name']!),
-                          const SizedBox(height: 5),
-                          Text('Date: ${appointment['date']}'),
-                          Text('Time: ${appointment['time']}'),
-                          Text('Location: ${appointment['location']}'),
+                          Icon(
+                            appointment['status'] == 'Approved'
+                                ? Icons.check_circle
+                                : appointment['status'] == 'Hold'
+                                    ? Icons.pause_circle
+                                    : appointment['status'] == 'Cancelled'
+                                        ? Icons.cancel
+                                        : Icons.hourglass_bottom,
+                            color: appointment['status'] == 'Approved'
+                                ? const Color.fromARGB(255, 46, 130, 48)
+                                : appointment['status'] == 'Hold'
+                                    ? Colors.orange
+                                    : appointment['status'] == 'Cancelled'
+                                        ? Colors.red
+                                        : Colors.black,
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(appointment['name']!),
+                              const SizedBox(height: 5),
+                              Text('Date: ${appointment['date']}'),
+                              Text('Time: ${appointment['time']}'),
+                              Text('Location: ${appointment['location']}'),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  if (appointment['status'] == 'Pending' ||
-                      appointment['status'] == 'Hold') ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Platform.isIOS
-                            ? CupertinoButton(
-                                color: Colors.blue,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
-                                onPressed: () => _adjustTime(index),
-                                child: const Text('Adjust Time'),
-                              )
-                            : ElevatedButton(
-                                onPressed: () => _adjustTime(index),
-                                child: const Text('Adjust Time'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 10),
-                                ),
-                              ),
-                        const SizedBox(width: 10),
-                        Platform.isIOS
-                            ? CupertinoButton(
-                                color: const Color.fromARGB(255, 46, 130, 48),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
-                                onPressed: () => _approveAppointment(index),
-                                child: const Text('Approve'),
-                              )
-                            : ElevatedButton(
-                                onPressed: () => _approveAppointment(index),
-                                child: const Text('Approve'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 46, 130, 48),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 10),
-                                ),
-                              ),
-                        const SizedBox(width: 10),
-                        if (appointment['status'] == 'Pending')
-                          Platform.isIOS
-                              ? CupertinoButton(
-                                  color: Colors.orange,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 10),
-                                  onPressed: () => _holdAppointment(index),
-                                  child: const Text('Hold'),
-                                )
-                              : ElevatedButton(
-                                  onPressed: () => _holdAppointment(index),
-                                  child: const Text('Hold'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orange,
+                      const SizedBox(height: 15),
+                      if (appointment['status'] == 'Pending' ||
+                          appointment['status'] == 'Hold') ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Platform.isIOS
+                                ? CupertinoButton(
+                                    color: Colors.blue,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 6, horizontal: 10),
+                                    onPressed: () => _adjustTime(index),
+                                    child: const Text('Adjust Time'),
+                                  )
+                                : ElevatedButton(
+                                    onPressed: () => _adjustTime(index),
+                                    child: const Text('Adjust Time'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 10),
+                                    ),
                                   ),
-                                ),
-                        const SizedBox(width: 10),
-                        Platform.isIOS
-                            ? CupertinoButton(
-                                color: Colors.red,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
-                                onPressed: () => _cancelAppointment(index),
-                                child: const Text('Cancel'),
-                              )
-                            : ElevatedButton(
-                                onPressed: () => _cancelAppointment(index),
-                                child: const Text('Cancel'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 10),
-                                ),
-                              ),
+                            const SizedBox(width: 10),
+                            Platform.isIOS
+                                ? CupertinoButton(
+                                    color:
+                                        const Color.fromARGB(255, 46, 130, 48),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 10),
+                                    onPressed: () => _approveAppointment(index),
+                                    child: const Text('Approve'),
+                                  )
+                                : ElevatedButton(
+                                    onPressed: () => _approveAppointment(index),
+                                    child: const Text('Approve'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 46, 130, 48),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 10),
+                                    ),
+                                  ),
+                            const SizedBox(width: 10),
+                            if (appointment['status'] == 'Pending')
+                              Platform.isIOS
+                                  ? CupertinoButton(
+                                      color: Colors.orange,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 10),
+                                      onPressed: () => _holdAppointment(index),
+                                      child: const Text('Hold'),
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: () => _holdAppointment(index),
+                                      child: const Text('Hold'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orange,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 6, horizontal: 10),
+                                      ),
+                                    ),
+                            const SizedBox(width: 10),
+                            Platform.isIOS
+                                ? CupertinoButton(
+                                    color: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 10),
+                                    onPressed: () => _cancelAppointment(index),
+                                    child: const Text('Cancel'),
+                                  )
+                                : ElevatedButton(
+                                    onPressed: () => _cancelAppointment(index),
+                                    child: const Text('Cancel'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 10),
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ] else ...[
+                        Text(
+                          appointment['status']!,
+                          style: TextStyle(
+                            color: appointment['status'] == 'Approved'
+                                ? const Color.fromARGB(255, 46, 130, 48)
+                                : appointment['status'] == 'Hold'
+                                    ? Colors.orange
+                                    : Colors.red,
+                          ),
+                        ),
                       ],
-                    ),
-                  ] else ...[
-                    Text(
-                      appointment['status']!,
-                      style: TextStyle(
-                        color: appointment['status'] == 'Approved'
-                            ? const Color.fromARGB(255, 46, 130, 48)
-                            : appointment['status'] == 'Hold'
-                                ? Colors.orange
-                                : Colors.red,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          );
-        },
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

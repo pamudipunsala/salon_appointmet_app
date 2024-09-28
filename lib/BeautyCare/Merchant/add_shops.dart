@@ -75,7 +75,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
     }
   }
 
-  void _showAddSalonDialog(BuildContext context) {
+  void _showAddShopDialog(BuildContext context) {
     final TextEditingController _shopNameController = TextEditingController();
 
     showDialog(
@@ -92,7 +92,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                     ),
                     const SizedBox(height: 10),
                     CupertinoButton(
-                      color: const Color.fromARGB(255, 152, 11, 58),
+                      color: const Color.fromARGB(255, 7, 111, 57),
                       child: const Text('Select Image'),
                       onPressed: _pickImage,
                     ),
@@ -132,7 +132,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                       onPressed: _pickImage,
                       child: const Text('Select Image'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+                        backgroundColor: const Color.fromARGB(255, 7, 111, 57),
                       ),
                     ),
                     if (_imagePath != null) Text('Image selected: $_imagePath'),
@@ -172,9 +172,9 @@ class _AddShopsPageState extends State<AddShopsPage> {
     return Scaffold(
       appBar: Platform.isIOS
           ? CupertinoNavigationBar(
-              middle: const Text('Add Salons',
+              middle: const Text('Add Shops',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -183,22 +183,22 @@ class _AddShopsPageState extends State<AddShopsPage> {
               ),
             )
           : AppBar(
-              title: const Text('Add Salons',
+              title: const Text('Add Shops',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img3.png',
+              'assets/images/background/bg8.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Column(
@@ -211,7 +211,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                       child: Platform.isIOS
                           ? CupertinoSearchTextField(
                               controller: _searchController,
-                              placeholder: 'Search branches...',
+                              placeholder: 'Search shops...',
                               backgroundColor:
                                   const Color.fromRGBO(255, 255, 255, 0.541),
                             )
@@ -219,7 +219,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                               controller: _searchController,
                               decoration: const InputDecoration(
                                 prefixIcon: Icon(Icons.search),
-                                hintText: 'Search branches...',
+                                hintText: 'Search shops...',
                                 border: OutlineInputBorder(),
                                 fillColor: Color.fromRGBO(255, 255, 255, 0.541),
                               ),
@@ -229,9 +229,9 @@ class _AddShopsPageState extends State<AddShopsPage> {
                     Platform.isIOS
                         ? CupertinoButton(
                             padding: const EdgeInsets.all(8.0),
-                            color: const Color.fromARGB(255, 152, 11, 58),
+                            color: const Color.fromARGB(255, 7, 111, 57),
                             onPressed: () {
-                              _showAddSalonDialog(context);
+                              _showAddShopDialog(context);
                             },
                             child: const Icon(CupertinoIcons.add,
                                 color: Colors.white),
@@ -239,9 +239,9 @@ class _AddShopsPageState extends State<AddShopsPage> {
                         : IconButton(
                             icon: const Icon(Icons.add, color: Colors.white),
                             onPressed: () {
-                              _showAddSalonDialog(context);
+                              _showAddShopDialog(context);
                             },
-                            color: const Color.fromARGB(255, 152, 11, 58),
+                            color: const Color.fromARGB(255, 7, 111, 57),
                           ),
                   ],
                 ),
@@ -285,18 +285,18 @@ class _AddShopsPageState extends State<AddShopsPage> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 22.0),
                                     color:
-                                        const Color.fromARGB(255, 152, 11, 58),
+                                        const Color.fromARGB(255, 7, 111, 57),
                                     onPressed: () {},
                                     child: Text(
                                       service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11),
                                     ),
                                   )
                                 : ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 152, 11, 58),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 7, 111, 57),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0, horizontal: 22.0),
                                     ),

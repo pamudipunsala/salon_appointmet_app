@@ -67,7 +67,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
           ? CupertinoNavigationBar(
               middle: const Text('Appointment History',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -78,16 +78,17 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
           : AppBar(
               title: const Text('Appointment History',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset('assets/images/img3.png', fit: BoxFit.cover),
+            child: Image.asset('assets/images/background/bg8.jpg',
+                fit: BoxFit.cover),
           ),
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.6)),
+            child: Container(color: Colors.black.withOpacity(0.4)),
           ),
           Column(
             children: [
@@ -121,7 +122,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                           style: const TextStyle(color: Colors.black),
                           underline: Container(
                             height: 2,
-                            color: const Color.fromARGB(255, 152, 11, 58),
+                            color: const Color.fromARGB(255, 7, 111, 57),
                           ),
                           onChanged: (String? newValue) {
                             setState(() {
@@ -163,7 +164,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                         child: Container(
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.white, width: 2),
                           ),

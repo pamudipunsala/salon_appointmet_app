@@ -20,54 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  // final Platform platform = const LocalPlatform();
-
-  // Function to handle login
-  // Future<void> _login(BuildContext context) async {
-  //   final username = usernameController.text;
-  //   final password = passwordController.text;
-
-  //   // Check if username or password is empty
-  //   if (username.isEmpty || password.isEmpty) {
-  //     _showErrorDialog(context, 'Please enter both username and password.');
-  //     return;
-  //   }
-
-  //   try {
-  //     // Send HTTP POST request to validate login
-  //     final response = await http.post(
-  //       Uri.parse('https://mobicloudpos.synnexcloudpos.com/'),
-  //       body: {
-  //         'u_name': username,
-  //         'user_password': password,
-  //       },
-  //     );
-
-  //     // If response is successful (HTTP status 200)
-  //     if (response.statusCode == 200) {
-  //       final responseData = json.decode(response.body);
-
-  //       // Check if the response contains user data
-  //       if (responseData is List && responseData.isNotEmpty) {
-  //         final userId = responseData[0]['USID'].toString();
-  //         SharedPreferences prefs = await SharedPreferences.getInstance();
-  //         await prefs.setString('userId', userId);
-
-  //         // Navigate to the dashboard page if login is successful
-  //         //   Navigator.pushReplacement(
-  //         //     context,
-  //         //     MaterialPageRoute(builder: (context) => DashboardPage()),
-  //         //   );
-  //         // } else {
-  //         _showErrorDialog(context, 'Invalid username or password.');
-  //       }
-  //     } else {
-  //       _showErrorDialog(context, 'Error: Could not connect to the server.');
-  //     }
-  //   } catch (e) {
-  //     _showErrorDialog(context, 'An error occurred: $e');
-  //   }
-  // }
 
   // Function to show error dialog
   void _showErrorDialog(BuildContext context, String message) {
@@ -118,20 +70,19 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/img1.png', // Your background image path
-              fit: BoxFit.cover,
+          // Background image as a container
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background/bg5.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
+            height: double.infinity, // Make the container fill the height
           ),
-          // Transparent color overlay
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.4), // Semi-transparent overlay
-            ),
+          Container(
+            color: Colors.black.withOpacity(0.4), // Overlay to darken the image
           ),
-          // Login form content in a white container
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -152,20 +103,13 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Center(
-                      // child: Image.asset(
-                      //   'assets/images/logo.png', // Optional logo
-                      //   width: 150,
-                      //   height: 100,
-                      // ),
-                      ),
                   const SizedBox(height: 20.0),
                   const Text(
                     'Login',
                     style: TextStyle(
                         fontSize: 25.0,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 152, 11, 58)),
+                        color: Color.fromARGB(255, 23, 92, 14)),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30.0),
@@ -179,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -211,11 +155,11 @@ class _LoginPageState extends State<LoginPage> {
                                 _isPasswordVisible
                                     ? CupertinoIcons.eye
                                     : CupertinoIcons.eye_slash,
-                                color: const Color.fromARGB(255, 152, 11, 58)),
+                                color: const Color.fromARGB(255, 23, 92, 14)),
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -252,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => ServicesPage()));
                           },
                           child: const Text('Login'),
-                          color: Color.fromARGB(255, 152, 11, 58),
+                          color: Color.fromARGB(255, 23, 92, 14),
                         )
                       : ElevatedButton(
                           onPressed: () {
@@ -262,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => ServicesPage()));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 152, 11, 58),
+                            backgroundColor: Color.fromARGB(255, 23, 92, 14),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             textStyle: const TextStyle(
                               fontSize: 18.0,
@@ -284,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextSpan(
                             text: 'Sign up',
                             style: const TextStyle(
-                              color: Color.fromARGB(255, 152, 11, 58),
+                              color: Color.fromARGB(255, 23, 92, 14),
                               fontWeight: FontWeight.bold,
                               fontSize: 14.0,
                             ),

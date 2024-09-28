@@ -1,8 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/mock_dashboard.dart';
-import 'package:salon_appointment_app/BeautyCare/mock_dashboard.dart';
+import 'package:salon_appointment_app/userRole.dart';
+import 'package:salon_appointment_app/userRole.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class BusinessTypePage extends StatefulWidget {
@@ -15,12 +15,8 @@ class BusinessTypePage extends StatefulWidget {
 class _BusinessTypePageState extends State<BusinessTypePage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Beauty Care', 'icon': Icons.store, 'page': MockDashboardPage()},
-    {
-      'title': 'Vehicle',
-      'icon': Icons.directions_car,
-      'page': MockDashboardPage()
-    },
+    {'title': 'Beauty Care', 'icon': Icons.store, 'page': UserRolePage()},
+    {'title': 'Vehicle', 'icon': Icons.directions_car, 'page': UserRolePage()},
   ];
 
   @override
@@ -33,7 +29,7 @@ class _BusinessTypePageState extends State<BusinessTypePage> {
           ? CupertinoNavigationBar(
               middle: const Text('Business Type',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: Builder(
                 builder: (BuildContext context) {
                   return CupertinoButton(
@@ -51,7 +47,7 @@ class _BusinessTypePageState extends State<BusinessTypePage> {
                 'Business Type',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
@@ -62,14 +58,14 @@ class _BusinessTypePageState extends State<BusinessTypePage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img9.jpeg',
+              'assets/images/background/bg5.jpg',
               fit: BoxFit.cover,
             ),
           ),
           // Transparent color overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.3),
             ),
           ),
           // Grid of pink square buttons
@@ -94,7 +90,7 @@ class _BusinessTypePageState extends State<BusinessTypePage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 152, 11, 58).withOpacity(0.7),
+                      color: Color.fromARGB(255, 7, 111, 57).withOpacity(0.7),
                       borderRadius:
                           BorderRadius.circular(12), // Rounded corners
                     ),

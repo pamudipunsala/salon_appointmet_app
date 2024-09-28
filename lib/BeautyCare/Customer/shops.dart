@@ -92,7 +92,7 @@ class _ShopsPageState extends State<ShopsPage> {
           ? CupertinoNavigationBar(
               middle:
                   const Text('Shops', style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -102,20 +102,20 @@ class _ShopsPageState extends State<ShopsPage> {
             )
           : AppBar(
               title: const Text('Shops', style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img3.png',
+              'assets/images/background/bg6.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Column(
@@ -184,7 +184,8 @@ class _ShopsPageState extends State<ShopsPage> {
                                 ? CupertinoButton(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 22.0),
-                                    color: const Color.fromRGBO(152, 11, 58, 1),
+                                    color:
+                                        const Color.fromARGB(255, 7, 111, 57),
                                     onPressed: () {
                                       Navigator.push(
                                           context,
@@ -194,14 +195,14 @@ class _ShopsPageState extends State<ShopsPage> {
                                     },
                                     child: Text(
                                       service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11),
                                     ),
                                   )
                                 : ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 152, 11, 58),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 7, 111, 57),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0, horizontal: 22.0),
                                     ),

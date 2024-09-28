@@ -30,7 +30,7 @@ class _AppointmentStatusState extends State<AppointmentStatus> {
           ? CupertinoNavigationBar(
               middle: const Text('Appointment Status',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -41,71 +41,109 @@ class _AppointmentStatusState extends State<AppointmentStatus> {
           : AppBar(
               title: const Text('Appointment Status',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            // Displaying Appointment Number
-            AppointmentDetailItem(
-              title: "Appointment No.",
-              value: appointmentNo,
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background/bg6.jpg', // Replace with your image asset path
+              fit: BoxFit.cover,
             ),
-            const Divider(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Appointment Details Card
+                Card(
+                  color: Colors.white.withOpacity(0.8),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppointmentDetailItem(
+                          title: "Appointment No.",
+                          value: appointmentNo,
+                        ),
+                        const Divider(),
+                        AppointmentDetailItem(
+                          title: "Date",
+                          value: appointmentDate,
+                        ),
+                        const Divider(),
+                        AppointmentDetailItem(
+                          title: "Time",
+                          value: appointmentTime,
+                        ),
+                        const Divider(),
+                        AppointmentDetailItem(
+                          title: "Status",
+                          value: appointmentStatus,
+                          valueColor: appointmentStatus == "Confirmed"
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-            // Displaying Appointment Date
-            AppointmentDetailItem(
-              title: "Date",
-              value: appointmentDate,
+                // Current Status Card
+                Card(
+                  color: Colors.white.withOpacity(0.8),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Current Status',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Stepper(
+                          physics: const NeverScrollableScrollPhysics(),
+                          currentStep:
+                              _statusOptions.indexOf(appointmentStatus),
+                          controlsBuilder: (context, details) =>
+                              const SizedBox.shrink(),
+                          steps: _statusOptions.map((status) {
+                            return Step(
+                              title: Text(status),
+                              content: const SizedBox.shrink(),
+                              isActive: appointmentStatus == status,
+                              state: appointmentStatus == status
+                                  ? StepState.complete
+                                  : StepState.indexed,
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Divider(),
-
-            // Displaying Appointment Time
-            AppointmentDetailItem(
-              title: "Time",
-              value: appointmentTime,
-            ),
-            const Divider(),
-
-            // Displaying Appointment Status
-            AppointmentDetailItem(
-              title: "Status",
-              value: appointmentStatus,
-              valueColor: appointmentStatus == "Confirmed"
-                  ? Colors.green
-                  : Colors.red, // Different color for status
-            ),
-            const SizedBox(height: 60),
-            const Text(
-              'Current Status',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
-            const SizedBox(height: 20),
-
-            Stepper(
-              physics: const NeverScrollableScrollPhysics(),
-              currentStep: _statusOptions.indexOf(appointmentStatus),
-              controlsBuilder: (context, details) => const SizedBox.shrink(),
-              steps: _statusOptions.map((status) {
-                return Step(
-                  title: Text(status),
-                  content: const SizedBox.shrink(),
-                  isActive: appointmentStatus == status,
-                  state: appointmentStatus == status
-                      ? StepState.complete
-                      : StepState.indexed,
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -5,14 +5,14 @@ import 'package:salon_appointment_app/BeautyCare/Customer/dashboard.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/dashboard.dart';
 import 'package:salon_appointment_app/menu.dart';
 
-class MockDashboardPage extends StatefulWidget {
-  const MockDashboardPage({super.key});
+class UserRolePage extends StatefulWidget {
+  const UserRolePage({super.key});
 
   @override
-  _MockDashboardPageState createState() => _MockDashboardPageState();
+  _UserRolePageState createState() => _UserRolePageState();
 }
 
-class _MockDashboardPageState extends State<MockDashboardPage> {
+class _UserRolePageState extends State<UserRolePage> {
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
     {
@@ -33,7 +33,7 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
           ? CupertinoNavigationBar(
               middle: const Text('Select User Role',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -46,7 +46,7 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
                 'Select User Role',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
@@ -56,14 +56,14 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img9.jpeg',
+              'assets/images/background/bg3.jpg',
               fit: BoxFit.cover,
             ),
           ),
           // Transparent color overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           // Grid of pink square buttons
@@ -88,7 +88,7 @@ class _MockDashboardPageState extends State<MockDashboardPage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 152, 11, 58).withOpacity(0.7),
+                      color: Color.fromARGB(255, 7, 111, 57).withOpacity(0.7),
                       borderRadius:
                           BorderRadius.circular(12), // Rounded corners
                     ),

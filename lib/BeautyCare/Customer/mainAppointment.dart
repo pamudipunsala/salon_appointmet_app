@@ -441,7 +441,7 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
           ? CupertinoNavigationBar(
               middle: const Text('Appointment Booking',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -452,92 +452,119 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
           : AppBar(
               title: const Text('Appointment Booking',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Date selection field
-            ListTile(
-              title: const Text("Select Date"),
-              subtitle: Text(
-                selectedDate != null
-                    ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
-                    : "No date selected",
-              ),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () => _selectDate(context),
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background/bg7.jpg', // Replace with your image path
+              fit: BoxFit.cover,
             ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0), // Adjust horizontal padding as needed
+              child: Card(
+                color: Colors.white.withOpacity(0.8),
+                elevation: 4, // Optional: Add elevation for shadow
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Optional: Rounded corners
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // Adjust to fit content
+                    children: [
+                      SizedBox(height: 20),
+                      ListTile(
+                        title: const Text("Select Date"),
+                        subtitle: Text(
+                          selectedDate != null
+                              ? "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"
+                              : "No date selected",
+                        ),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDate(context),
+                      ),
 
-            // Time selection field
-            ListTile(
-              title: const Text("Select Time"),
-              subtitle: Text(
-                selectedTime != null
-                    ? "${selectedTime!.hour}:${selectedTime!.minute}"
-                    : "No time selected",
-              ),
-              trailing: const Icon(Icons.access_time),
-              onTap: () => _selectTime(context),
-            ),
+                      // Time selection field
+                      ListTile(
+                        title: const Text("Select Time"),
+                        subtitle: Text(
+                          selectedTime != null
+                              ? "${selectedTime!.hour}:${selectedTime!.minute}"
+                              : "No time selected",
+                        ),
+                        trailing: const Icon(Icons.access_time),
+                        onTap: () => _selectTime(context),
+                      ),
 
-            // Service selection field
-            ListTile(
-              title: const Text("Select Services"),
-              subtitle: Text(
-                selectedServices.isNotEmpty
-                    ? selectedServices.join(', ')
-                    : "No services selected",
-              ),
-              trailing: const Icon(Icons.arrow_drop_down),
-              onTap: _showServiceSelectionDialog,
-            ),
+                      // Service selection field
+                      ListTile(
+                        title: const Text("Select Services"),
+                        subtitle: Text(
+                          selectedServices.isNotEmpty
+                              ? selectedServices.join(', ')
+                              : "No services selected",
+                        ),
+                        trailing: const Icon(Icons.arrow_drop_down),
+                        onTap: _showServiceSelectionDialog,
+                      ),
 
-            ListTile(
-              title: const Text("Select Category"),
-              subtitle: Text(
-                selectedCategories.isNotEmpty
-                    ? selectedCategories.join(', ')
-                    : "No categories selected",
-              ),
-              trailing: const Icon(Icons.arrow_drop_down),
-              onTap: _showCategorySelectionDialog,
-            ),
+                      ListTile(
+                        title: const Text("Select Category"),
+                        subtitle: Text(
+                          selectedCategories.isNotEmpty
+                              ? selectedCategories.join(', ')
+                              : "No categories selected",
+                        ),
+                        trailing: const Icon(Icons.arrow_drop_down),
+                        onTap: _showCategorySelectionDialog,
+                      ),
 
-            ListTile(
-              title: const Text("Select Location"),
-              subtitle: Text(
-                selectedLocations.isNotEmpty
-                    ? selectedLocations.join(', ')
-                    : "No location selected",
-              ),
-              trailing: const Icon(Icons.arrow_drop_down),
-              onTap: _showLocationSelectionDialog,
-            ),
+                      ListTile(
+                        title: const Text("Select Location"),
+                        subtitle: Text(
+                          selectedLocations.isNotEmpty
+                              ? selectedLocations.join(', ')
+                              : "No location selected",
+                        ),
+                        trailing: const Icon(Icons.arrow_drop_down),
+                        onTap: _showLocationSelectionDialog,
+                      ),
 
-            SizedBox(height: 40),
-            // Submit button
-            Platform.isIOS
-                ? CupertinoButton(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 22.0),
-                    color: const Color.fromARGB(255, 152, 11, 58),
-                    onPressed: () {},
-                    child: const Text(
-                      "Book Appointment",
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                  )
-                : ElevatedButton(
-                    onPressed: () {
-                      // Handle booking submission
-                    },
-                    child: const Text("Book Appointment"),
+                      SizedBox(height: 20), // Adjust spacing as needed
+                      // Submit button
+                      Platform.isIOS
+                          ? CupertinoButton(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 22.0),
+                              color: const Color.fromARGB(255, 7, 111, 57),
+                              onPressed: () {},
+                              child: const Text(
+                                "Book Appointment",
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                // Handle booking submission
+                              },
+                              child: const Text("Book Appointment"),
+                            ),
+                      SizedBox(height: 20),
+                    ],
                   ),
-          ],
-        ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

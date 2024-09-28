@@ -36,7 +36,7 @@ class _ViewReviewsState extends State<ViewReviews> {
           ? CupertinoNavigationBar(
               middle: const Text('View Reviews',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -47,24 +47,50 @@ class _ViewReviewsState extends State<ViewReviews> {
           : AppBar(
               title: const Text('View Reviews',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
-      body: ListView.builder(
-        itemCount: reviews.length,
-        itemBuilder: (context, index) {
-          final review = reviews[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: ListTile(
-              leading: CircleAvatar(
-                child: Text(review['rating']!),
-              ),
-              title: Text(review['name']!),
-              subtitle: Text(review['comment']!),
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background/bg6.jpg', // Replace with your image path
+              fit: BoxFit.cover,
             ),
-          );
-        },
+          ),
+          // Semi-transparent overlay for readability
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
+            ),
+          ),
+          ListView.builder(
+            itemCount: reviews.length,
+            itemBuilder: (context, index) {
+              final review = reviews[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                color: Colors.white
+                    .withOpacity(0.8), // Slight transparency for the card
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text(
+                      review['rating']!,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: const Color.fromARGB(255, 7, 111, 57),
+                  ),
+                  title: Text(
+                    review['name']!,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(review['comment']!),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

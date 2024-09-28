@@ -61,7 +61,7 @@ class _OffersPageState extends State<OffersPage> {
           ? CupertinoNavigationBar(
               middle:
                   const Text('Offers', style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: Builder(builder: (BuildContext context) {
                 return CupertinoNavigationBarBackButton(
                   color: Colors.white,
@@ -75,7 +75,7 @@ class _OffersPageState extends State<OffersPage> {
                 'Offers',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
@@ -84,13 +84,13 @@ class _OffersPageState extends State<OffersPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img3.png',
+              'assets/images/background/bg7.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Column(children: [
@@ -146,46 +146,46 @@ class _OffersPageState extends State<OffersPage> {
                           ),
                         ),
                         // Button with product name
-                        Positioned(
-                          bottom: 20,
-                          child: Platform.isIOS
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.white, width: 2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: CupertinoButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 22.0),
-                                    child: Text(
-                                      'Apply Now',
-                                      style: const TextStyle(fontSize: 16.0),
-                                    ),
-                                    color:
-                                        const Color.fromARGB(255, 152, 11, 58),
-                                    onPressed: () {},
-                                  ),
-                                )
-                              : ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 152, 11, 58),
-                                    side: const BorderSide(
-                                        color: Colors.white, width: 2),
-                                  ),
-                                  onPressed: () {
-                                    // Handle product button press
-                                  },
-                                  child: Text(
-                                    'Apply Now',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                        ),
+                        // Positioned(
+                        //   bottom: 20,
+                        //   child: Platform.isIOS
+                        //       ? Container(
+                        //           decoration: BoxDecoration(
+                        //             border: Border.all(
+                        //                 color: Colors.white, width: 2),
+                        //             borderRadius: BorderRadius.circular(12),
+                        //           ),
+                        //           child: CupertinoButton(
+                        //             padding: const EdgeInsets.symmetric(
+                        //                 vertical: 8.0, horizontal: 22.0),
+                        //             child: Text(
+                        //               'Apply Now',
+                        //               style: const TextStyle(fontSize: 16.0),
+                        //             ),
+                        //             color:
+                        //                 const Color.fromARGB(255, 7, 111, 57),
+                        //             onPressed: () {},
+                        //           ),
+                        //         )
+                        //       : ElevatedButton(
+                        //           style: ElevatedButton.styleFrom(
+                        //             backgroundColor:
+                        //                 const Color.fromARGB(255, 7, 111, 57),
+                        //             side: const BorderSide(
+                        //                 color: Colors.white, width: 2),
+                        //           ),
+                        //           onPressed: () {
+                        //             // Handle product button press
+                        //           },
+                        //           child: Text(
+                        //             'Apply Now',
+                        //             style: const TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 16,
+                        //             ),
+                        //           ),
+                        //         ),
+                        // ),
                       ],
                     );
                   },

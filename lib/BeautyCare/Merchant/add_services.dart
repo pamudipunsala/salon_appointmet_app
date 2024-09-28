@@ -95,7 +95,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                     ),
                     const SizedBox(height: 10),
                     CupertinoButton(
-                      color: const Color.fromARGB(255, 152, 11, 58),
+                      color: const Color.fromARGB(255, 7, 111, 57),
                       child: const Text('Select Image'),
                       onPressed: _pickImage,
                     ),
@@ -135,7 +135,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                       onPressed: _pickImage,
                       child: const Text('Select Image'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+                        backgroundColor: const Color.fromARGB(255, 7, 111, 57),
                       ),
                     ),
                     if (_imagePath != null) Text('Image selected: $_imagePath'),
@@ -177,7 +177,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
           ? CupertinoNavigationBar(
               middle: const Text('Add Services',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -188,20 +188,20 @@ class _AddServicesPageState extends State<AddServicesPage> {
           : AppBar(
               title: const Text('Add Services',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img3.png',
+              'assets/images/background/bg8.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Column(
@@ -232,7 +232,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                     Platform.isIOS
                         ? CupertinoButton(
                             padding: const EdgeInsets.all(8.0),
-                            color: const Color.fromARGB(255, 152, 11, 58),
+                            color: const Color.fromARGB(255, 7, 111, 57),
                             onPressed: () {
                               _showAddServiceDialog(context);
                             },
@@ -244,7 +244,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                             onPressed: () {
                               _showAddServiceDialog(context);
                             },
-                            color: const Color.fromARGB(255, 152, 11, 58),
+                            color: const Color.fromARGB(255, 7, 111, 57),
                           ),
                   ],
                 ),
@@ -282,7 +282,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 22.0),
                                     color:
-                                        const Color.fromARGB(255, 152, 11, 58),
+                                        const Color.fromARGB(255, 7, 111, 57),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -298,8 +298,8 @@ class _AddServicesPageState extends State<AddServicesPage> {
                                   )
                                 : ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 152, 11, 58),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 7, 111, 57),
                                       side: const BorderSide(
                                           color: Colors.white, width: 2),
                                     ),

@@ -41,7 +41,7 @@ class _CustomerHistoryState extends State<CustomerHistory> {
           ? CupertinoNavigationBar(
               middle: const Text('Appointment History',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -52,16 +52,17 @@ class _CustomerHistoryState extends State<CustomerHistory> {
           : AppBar(
               title: const Text('Appointment History',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset('assets/images/img3.png', fit: BoxFit.cover),
+            child: Image.asset('assets/images/background/bg6.jpg',
+                fit: BoxFit.cover),
           ),
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.6)),
+            child: Container(color: Colors.black.withOpacity(0.4)),
           ),
           Column(
             children: [
@@ -101,7 +102,7 @@ class _CustomerHistoryState extends State<CustomerHistory> {
                         child: Container(
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.white, width: 2),
                           ),
@@ -115,14 +116,14 @@ class _CustomerHistoryState extends State<CustomerHistory> {
                                     'Date: ${customer['date']!}',
                                     style: const TextStyle(
                                       fontSize: 16,
-                                      color: Colors.black54,
+                                      color: Colors.black,
                                     ),
                                   ),
                                   Text(
                                     'Branch: ${customer['branch']!}',
                                     style: const TextStyle(
                                       fontSize: 16,
-                                      color: Colors.black54,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ],
@@ -155,7 +156,7 @@ class CustomerDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Customer Details'),
-        backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+        backgroundColor: const Color.fromARGB(255, 7, 111, 57),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -42,7 +42,7 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
           ? CupertinoNavigationBar(
               middle: const Text('Dashboard',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -55,7 +55,7 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
                 'Dashboard',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
@@ -65,14 +65,14 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img9.jpeg',
+              'assets/images/background/bg6.jpg',
               fit: BoxFit.cover,
             ),
           ),
           // Transparent color overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           // Grid of pink square buttons
@@ -103,7 +103,7 @@ class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 152, 11, 58).withOpacity(0.7),
+                      color: Color.fromARGB(255, 7, 111, 57).withOpacity(0.7),
                       borderRadius:
                           BorderRadius.circular(12), // Rounded corners
                     ),

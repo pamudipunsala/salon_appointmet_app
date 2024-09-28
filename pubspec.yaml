@@ -93,6 +93,16 @@ flutter:
     - assets/images/img28.png
     - assets/images/img29.jpeg
     - assets/images/img30.png
+    - assets/images/background/bg1.jpg
+    - assets/images/background/bg2.jpg
+    - assets/images/background/bg3.jpg
+    - assets/images/background/bg4.jpg
+    - assets/images/background/bg5.jpg
+    - assets/images/background/bg6.jpg
+    - assets/images/background/bg7.jpg
+    - assets/images/background/bg8.jpg
+    - assets/images/background/bg9.jpg
+    - assets/images/background/bg10.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

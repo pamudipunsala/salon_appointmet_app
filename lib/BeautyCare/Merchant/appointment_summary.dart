@@ -39,7 +39,7 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
                 'Appointment Summary',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -65,7 +65,7 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
                 'Appointment Summary',
                 style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(
                 color: Colors.white,
               ),
@@ -84,100 +84,131 @@ class _AppointmentSummaryPageState extends State<AppointmentSummaryPage> {
                 )
               ],
             ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(40.0),
-            child: Center(
-              child: Text(
-                'Total Appointments: $_totalAppointments',
-                style: TextStyle(fontSize: 24.0),
-              ),
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background/bg6.jpg',
+              fit: BoxFit.cover,
             ),
           ),
-          // Completed
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  'Completed',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  '$_completedPercentage%',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-              ],
+          // Semi-transparent overlay
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
-          // Not Completed
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  'Not Completed',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  '$_notCompletedPercentage%',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-              ],
-            ),
-          ),
-          // Cancelled
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  'Cancelled',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                Text(
-                  '$_cancelledPercentage%',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-              ],
-            ),
-          ),
-          // Event-marked calendar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TableCalendar(
-              focusedDay: _focusedDay,
-              firstDay: DateTime.utc(2020, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              calendarFormat: _calendarFormat,
-              eventLoader: (day) {
-                return _events[day] ?? [];
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              calendarStyle: const CalendarStyle(
-                markerDecoration: BoxDecoration(
-                  color: Color.fromARGB(255, 152, 11, 58),
-                  shape: BoxShape.circle,
-                ),
-                selectedDecoration: BoxDecoration(
-                  color: Color.fromARGB(255, 152, 11, 58),
-                  shape: BoxShape.circle,
+          // Page content
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Center(
+                  child: Text(
+                    'Total Appointments: $_totalAppointments',
+                    style: const TextStyle(fontSize: 24.0, color: Colors.white),
+                  ),
                 ),
               ),
-            ),
+              // Completed
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text(
+                      'Completed',
+                      style: TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                    Text(
+                      '$_completedPercentage%',
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              // Not Completed
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text(
+                      'Not Completed',
+                      style: TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                    Text(
+                      '$_notCompletedPercentage%',
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              // Cancelled
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text(
+                      'Cancelled',
+                      style: TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                    Text(
+                      '$_cancelledPercentage%',
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              // Event-marked calendar in a card
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  color: Colors.white.withOpacity(0.8),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TableCalendar(
+                      focusedDay: _focusedDay,
+                      firstDay: DateTime.utc(2020, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+                      calendarFormat: _calendarFormat,
+                      eventLoader: (day) {
+                        return _events[day] ?? [];
+                      },
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      },
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDay, day);
+                      },
+                      calendarStyle: const CalendarStyle(
+                        markerDecoration: BoxDecoration(
+                          color: Color.fromARGB(255, 7, 111, 57),
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: BoxDecoration(
+                          color: Color.fromARGB(255, 7, 111, 57),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

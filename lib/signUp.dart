@@ -77,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img2.jpg',
+              'assets/images/background/bg7.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -123,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     style: TextStyle(
                         fontSize: 25.0,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 152, 11, 58)),
+                        color: Color.fromARGB(255, 23, 92, 14)),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30.0),
@@ -137,7 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -160,7 +160,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -183,7 +183,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -206,7 +206,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -229,7 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -261,11 +261,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                 _isPasswordVisible
                                     ? CupertinoIcons.eye
                                     : CupertinoIcons.eye_slash,
-                                color: const Color.fromARGB(255, 152, 11, 58)),
+                                color: const Color.fromARGB(255, 23, 92, 14)),
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -310,11 +310,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                 _isPasswordVisible
                                     ? CupertinoIcons.eye
                                     : CupertinoIcons.eye_slash,
-                                color: const Color.fromARGB(255, 152, 11, 58)),
+                                color: const Color.fromARGB(255, 23, 92, 14)),
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(
-                                color: Color.fromARGB(255, 152, 11, 58)),
+                                color: Color.fromARGB(255, 23, 92, 14)),
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                         )
@@ -352,7 +352,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                         const BusinessTypePage()));
                           },
                           child: const Text('Sign Up'),
-                          color: Color.fromARGB(255, 152, 11, 58),
+                          color: Color.fromARGB(255, 23, 92, 14),
                         )
                       : ElevatedButton(
                           onPressed: () {
@@ -362,7 +362,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     builder: (context) => BusinessTypePage()));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 152, 11, 58),
+                            backgroundColor: Color.fromARGB(255, 23, 92, 14),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             textStyle: const TextStyle(
                               fontSize: 18.0,

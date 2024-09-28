@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Appointment App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 152, 11, 58)),
+            seedColor: const Color.fromARGB(255, 7, 111, 57)),
         useMaterial3: true,
       ),
       home: const SplashScreenPage(),

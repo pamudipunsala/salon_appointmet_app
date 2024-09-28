@@ -78,7 +78,7 @@ class _CategoryPageState extends State<CategoryPage> {
           ? CupertinoNavigationBar(
               middle: const Text('Categories',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               leading: CupertinoNavigationBarBackButton(
                 color: Colors.white,
                 onPressed: () {
@@ -89,20 +89,20 @@ class _CategoryPageState extends State<CategoryPage> {
           : AppBar(
               title: const Text('Categories',
                   style: TextStyle(color: Colors.white)),
-              backgroundColor: const Color.fromARGB(255, 152, 11, 58),
+              backgroundColor: const Color.fromARGB(255, 7, 111, 57),
               iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/img3.png',
+              'assets/images/background/bg7.jpg',
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Column(
@@ -160,7 +160,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 22.0),
                                     color:
-                                        const Color.fromARGB(255, 152, 11, 58),
+                                        const Color.fromARGB(255, 7, 111, 57),
                                     onPressed: () {
                                       Navigator.push(
                                           context,
@@ -175,8 +175,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                   )
                                 : ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 152, 11, 58),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 7, 111, 57),
                                       side: const BorderSide(
                                           color: Colors.white, width: 2),
                                     ),
