@@ -16,6 +16,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
@@ -63,6 +64,39 @@ class _SignUpPageState extends State<SignUpPage> {
           );
         },
       );
+    }
+  }
+
+  Future<void> signUp() async {
+    var url = Uri.parse(Platform.isAndroid
+        ? 'http://10.0.2.2/mobile_apps/appointmentApp/profile.php'
+        : 'http://localhost/mobile_apps/appointmentApp/profile.php');
+
+    try {
+      var response = await http.post(url, body: {
+        'name': nameController.text,
+        'phone': phoneNumberController.text,
+        'category': categoryController.text,
+        'email': emailController.text,
+        'username': usernameController.text,
+        'password': passwordController.text,
+        'confirm_password': confirmPasswordController.text,
+      });
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data['status'] == 'success') {
+          Navigator.pushReplacementNamed(context, '/businessTypePage');
+        } else {
+          _showErrorDialog(context, data['message']);
+        }
+      } else {
+        _showErrorDialog(context,
+            "Failed to connect to the server. Response: ${response.body}");
+        print("error: ${response.body}");
+      }
+    } catch (e) {
+      _showErrorDialog(context, "Error: $e");
     }
   }
 
@@ -298,16 +332,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: confirmPasswordController,
                           placeholder: 'Confirm Password',
                           padding: const EdgeInsets.all(16.0),
-                          obscureText: !_isPasswordVisible,
+                          obscureText: !_isConfirmPasswordVisible,
                           suffix: CupertinoButton(
                             padding: EdgeInsets.zero,
                             onPressed: () {
                               setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
+                                _isConfirmPasswordVisible =
+                                    !_isConfirmPasswordVisible;
                               });
                             },
                             child: Icon(
-                                _isPasswordVisible
+                                _isConfirmPasswordVisible
                                     ? CupertinoIcons.eye
                                     : CupertinoIcons.eye_slash,
                                 color: const Color.fromARGB(255, 23, 92, 14)),
@@ -325,19 +360,20 @@ class _SignUpPageState extends State<SignUpPage> {
                             border: const OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isPasswordVisible
+                                _isConfirmPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                                 color: const Color.fromRGBO(118, 118, 118, 1),
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
                                 });
                               },
                             ),
                           ),
-                          obscureText: !_isPasswordVisible,
+                          obscureText: !_isConfirmPasswordVisible,
                         ),
                   const SizedBox(height: 30.0),
 
@@ -345,21 +381,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   Platform.isIOS
                       ? CupertinoButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BusinessTypePage()));
+                            signUp();
                           },
                           child: const Text('Sign Up'),
                           color: Color.fromARGB(255, 23, 92, 14),
                         )
                       : ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BusinessTypePage()));
+                            signUp();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 23, 92, 14),

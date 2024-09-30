@@ -5,8 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
 import 'package:salon_appointment_app/signUp.dart';
+import 'package:salon_appointment_app/type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -189,11 +189,56 @@ class _LoginPageState extends State<LoginPage> {
                   // Login button
                   Platform.isIOS
                       ? CupertinoButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ServicesPage()));
+                          onPressed: () async {
+                            String username = usernameController.text.trim();
+                            String password = passwordController.text.trim();
+
+                            if (username.isEmpty || password.isEmpty) {
+                              _showErrorDialog(context,
+                                  "Please enter both username and password.");
+                              return;
+                            }
+
+                            // Create the URL for your PHP script
+                            final url = Uri.parse(
+                                'http://localhost/mobile_apps/appointmentApp/login.php');
+
+                            // Prepare the data to send
+                            final body = jsonEncode(
+                                {'username': username, 'password': password});
+
+                            // Send the HTTP request
+                            try {
+                              final response = await http.post(
+                                url,
+                                headers: {"Content-Type": "application/json"},
+                                body: body,
+                              );
+
+                              if (response.statusCode == 200) {
+                                // Parse the response
+                                final Map<String, dynamic> responseData =
+                                    jsonDecode(response.body);
+                                if (responseData['status'] == 'success') {
+                                  // Navigate to the next page
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            BusinessTypePage()),
+                                  );
+                                } else {
+                                  _showErrorDialog(
+                                      context, responseData['message']);
+                                }
+                              } else {
+                                _showErrorDialog(context,
+                                    "Failed to connect to the server.");
+                              }
+                            } catch (e) {
+                              _showErrorDialog(
+                                  context, "An error occurred: $e");
+                            }
                           },
                           child: const Text('Login'),
                           color: Color.fromARGB(255, 23, 92, 14),
@@ -203,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ServicesPage()));
+                                    builder: (context) => BusinessTypePage()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 23, 92, 14),
@@ -238,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const SignUpPage(),
+                                    builder: (context) => SignUpPage(),
                                   ),
                                 );
                               },
