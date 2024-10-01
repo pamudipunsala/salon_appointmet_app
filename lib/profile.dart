@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +12,45 @@ class ProfileScreenPage extends StatefulWidget {
 }
 
 class _ProfileScreenPageState extends State<ProfileScreenPage> {
-  // Dummy data for demonstration purposes
-  String userName = "John Doe";
-  String appointmentDate = "12th September 2024";
-  String appointmentTime = "3:00 PM";
-  String service = "Haircut";
-  String location = "Downtown Salon";
+  String name = "";
+  String category = "";
+  String phone = "";
+  String email = "";
+
+  // Example user ID, replace with actual logged-in user ID
+  String userId = "1";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfileData();
+  }
+
+  Future<void> fetchProfileData() async {
+    try {
+      var url = Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/fetch_profile.php');
+      var response = await http.post(url, body: {'user_id': userId});
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data["error"] == null) {
+          setState(() {
+            name = data['name'];
+            category = data['category'];
+            phone = data['phone'];
+            email = data['email'];
+          });
+        } else {
+          print("User not found");
+        }
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +79,8 @@ class _ProfileScreenPageState extends State<ProfileScreenPage> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                    'assets/images/background/bg6.jpg'), // Path to your image
-                fit: BoxFit.cover, // Make image cover the screen
+                image: AssetImage('assets/images/background/bg6.jpg'),
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -60,20 +94,18 @@ class _ProfileScreenPageState extends State<ProfileScreenPage> {
                 // Profile Picture Placeholder (optional)
                 const CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage(
-                      'assets/profile_placeholder.png'), // Add your asset image here
+                  backgroundImage: AssetImage('assets/profile_placeholder.png'),
                   backgroundColor: Colors.grey,
                 ),
                 const SizedBox(height: 20),
 
                 // User's Name
                 Text(
-                  userName,
+                  name,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color:
-                        Colors.black, // Change text color for better contrast
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -83,7 +115,7 @@ class _ProfileScreenPageState extends State<ProfileScreenPage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8), // Slight transparency
+                    color: Colors.white.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -98,27 +130,21 @@ class _ProfileScreenPageState extends State<ProfileScreenPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ProfileDetailItem(
-                        icon: Icons.calendar_today,
-                        title: 'Appointment Date',
-                        value: appointmentDate,
+                        icon: Icons.category,
+                        title: 'Category',
+                        value: category,
                       ),
                       const Divider(),
                       ProfileDetailItem(
-                        icon: Icons.access_time,
-                        title: 'Appointment Time',
-                        value: appointmentTime,
+                        icon: Icons.phone,
+                        title: 'Phone',
+                        value: phone,
                       ),
                       const Divider(),
                       ProfileDetailItem(
-                        icon: Icons.design_services,
-                        title: 'Service',
-                        value: service,
-                      ),
-                      const Divider(),
-                      ProfileDetailItem(
-                        icon: Icons.location_on,
-                        title: 'Location',
-                        value: location,
+                        icon: Icons.email,
+                        title: 'Email',
+                        value: email,
                       ),
                     ],
                   ),
@@ -156,7 +182,7 @@ class ProfileDetailItem extends StatelessWidget {
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Colors.black, // Change color for visibility
+            color: Colors.black,
           ),
         ),
         const Spacer(),
@@ -164,7 +190,7 @@ class ProfileDetailItem extends StatelessWidget {
           value,
           style: const TextStyle(
             fontSize: 16,
-            color: Colors.black, // Change color for visibility
+            color: Colors.black,
           ),
         ),
       ],

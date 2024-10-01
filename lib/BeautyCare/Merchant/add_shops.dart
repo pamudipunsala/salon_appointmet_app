@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class AddShopsPage extends StatefulWidget {
   const AddShopsPage({super.key});
@@ -48,30 +50,74 @@ class _AddShopsPageState extends State<AddShopsPage> {
   Future<void> _pickImage() async {
     PermissionStatus permissionStatus;
 
+    // Check the platform and request the corresponding permission
     if (Platform.isAndroid) {
-      permissionStatus = await Permission.storage.request();
+      permissionStatus = await Permission.storage.status;
     } else if (Platform.isIOS) {
-      permissionStatus = await Permission.photos.request();
+      permissionStatus = await Permission.photos.status;
     } else {
       return;
     }
 
+    // Check if permission is granted
     if (permissionStatus.isGranted) {
-      // If permission granted, pick the image
+      print("Permission granted, opening gallery...");
+      // If already granted, proceed to pick the image
       final XFile? image =
           await _imagePicker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         setState(() {
           _imagePath = image.path;
+          print("Image selected: $_imagePath");
         });
+      } else {
+        print("No image selected");
       }
-    } else {
-      print('Permission denied to access the gallery.');
-      // Optionally show a message or redirect to app settings
-      if (await Permission.storage.isPermanentlyDenied ||
-          await Permission.photos.isPermanentlyDenied) {
-        openAppSettings();
+    } else if (permissionStatus.isDenied) {
+      print("Permission denied, requesting permission...");
+      // If denied, request permission again
+      if (Platform.isAndroid) {
+        permissionStatus = await Permission.storage.request();
+      } else if (Platform.isIOS) {
+        permissionStatus = await Permission.photos.request();
       }
+
+      if (permissionStatus.isGranted) {
+        print("Permission granted after request, opening gallery...");
+        // If permission is granted after the request, proceed to pick the image
+        final XFile? image =
+            await _imagePicker.pickImage(source: ImageSource.gallery);
+        if (image != null) {
+          setState(() {
+            _imagePath = image.path;
+            print("Image selected: $_imagePath");
+          });
+        } else {
+          print("No image selected");
+        }
+      } else if (permissionStatus.isDenied) {
+        print("Permission still denied");
+        // If still denied, show a message or handle accordingly
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Permission denied to access the gallery.')),
+        );
+      }
+    } else if (permissionStatus.isPermanentlyDenied) {
+      print("Permission permanently denied, redirecting to settings...");
+      // If permanently denied, redirect to app settings
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              const Text('Please enable gallery access from the settings.'),
+          action: SnackBarAction(
+            label: 'Settings',
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -158,12 +204,38 @@ class _AddShopsPageState extends State<AddShopsPage> {
     );
   }
 
-  void _addShops(String name, String? imagePath) {
+  void _addShops(String name, String? imagePath) async {
     if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        services.add({'name': name, 'image': imagePath});
-        _filteredServices = services;
-      });
+      var requestData = {
+        'name': name,
+        'image_path': imagePath,
+      };
+
+      var response = await http.post(
+        Uri.parse('http://localhost/mobile_apps/appointmentApp/add_shops.php'),
+        body: requestData,
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          setState(() {
+            services.add({'name': name, 'image': imagePath});
+            _filteredServices = services;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Shop added successfully')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${responseData['message']}')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add shop')),
+        );
+      }
     }
   }
 

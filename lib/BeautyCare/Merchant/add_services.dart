@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/categories.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/add_categories.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AddServicesPage extends StatefulWidget {
   const AddServicesPage({super.key});
@@ -114,7 +116,6 @@ class _AddServicesPageState extends State<AddServicesPage> {
                     child: const Text('Add'),
                     onPressed: () {
                       _addService(_serviceNameController.text, _imagePath);
-                      Navigator.of(context).pop();
                     },
                   ),
                 ],
@@ -161,14 +162,46 @@ class _AddServicesPageState extends State<AddServicesPage> {
     );
   }
 
-  void _addService(String name, String? imagePath) {
-    if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        services.add({'name': name, 'image': imagePath});
-        _filteredServices = services;
-      });
+  void _addService(String name, String? imagePath) async {
+  if (name.isNotEmpty && imagePath != null) {
+    // URL to your PHP script
+    final url = Uri.parse('https://yourserver.com/path_to_php/add_service.php');
+
+    // Create a request body
+    final requestBody = {
+      'name': name,
+      'image': imagePath,
+    };
+
+    // Send POST request to the PHP script
+    final response = await http.post(
+      url,
+      body: requestBody,
+    );
+
+    // Check response from the server
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] == 'success') {
+        setState(() {
+          services.add({'name': name, 'image': imagePath});
+          _filteredServices = services;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Service added successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${responseData['message']}')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to connect to the server.')),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

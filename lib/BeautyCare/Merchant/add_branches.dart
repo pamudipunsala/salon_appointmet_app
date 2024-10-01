@@ -1,8 +1,10 @@
-import 'dart:io' show Platform;
+import 'dart:convert';
+import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class AddSalonBranchesPage extends StatefulWidget {
   const AddSalonBranchesPage({super.key});
@@ -111,7 +113,6 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                     child: const Text('Add'),
                     onPressed: () {
                       _addSalon(_salonNameController.text, _imagePath);
-                      Navigator.of(context).pop();
                     },
                   ),
                 ],
@@ -158,12 +159,35 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
     );
   }
 
-  void _addSalon(String name, String? imagePath) {
+  void _addSalon(String name, String? imagePath) async {
     if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        services.add({'name': name, 'image': imagePath});
-        _filteredServices = services;
-      });
+      // Read the image as base64 string
+      String base64Image = base64Encode(await File(imagePath).readAsBytes());
+
+      // Send a POST request to the server
+      final response = await http.post(
+        Uri.parse(
+            'https://localhost/mobile_apps/appointmentApp/add_branches.php'),
+        body: {
+          'name': name,
+          'image': base64Image,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success') {
+          // Add the salon locally to the list if the server response is successful
+          setState(() {
+            services.add({'name': name, 'image': imagePath});
+            _filteredServices = services;
+          });
+        } else {
+          print('Error: ${responseData['message']}');
+        }
+      } else {
+        print('Server error: ${response.statusCode}');
+      }
     }
   }
 
