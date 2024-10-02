@@ -1,8 +1,10 @@
-import 'dart:io' show Platform;
+import 'dart:convert';
+import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class AddOffersPage extends StatefulWidget {
   const AddOffersPage({super.key});
@@ -123,7 +125,7 @@ class _AddOffersPageState extends State<AddOffersPage> {
                   CupertinoDialogAction(
                     child: const Text('Add'),
                     onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
+                      _addOffers(_salonNameController.text, _imagePath);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -161,7 +163,7 @@ class _AddOffersPageState extends State<AddOffersPage> {
                         ),
                         CupertinoDialogAction(
                           onPressed: () {
-                            _addSalon(_salonNameController.text, _imagePath);
+                            _addOffers(_salonNameController.text, _imagePath);
                             Navigator.of(context).pop();
                           },
                           child: const Text('Add'),
@@ -176,7 +178,7 @@ class _AddOffersPageState extends State<AddOffersPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            _addSalon(_salonNameController.text, _imagePath);
+                            _addOffers(_salonNameController.text, _imagePath);
                             Navigator.of(context).pop();
                           },
                           child: const Text('Add'),
@@ -187,14 +189,37 @@ class _AddOffersPageState extends State<AddOffersPage> {
     );
   }
 
-  void _addSalon(String name, String? imagePath) {
+  void _addOffers(String name, String? imagePath) async {
     if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        offers.add({'name': name, 'image': imagePath});
-        _filteredOffers = offers;
-      });
+      // Read the image as base64 string
+      String base64Image = base64Encode(await File(imagePath).readAsBytes());
+
+      // Send a POST request to the server
+      final response = await http.post(
+        Uri.parse(
+            'https://localhost/mobile_apps/appointmentApp/add_branches.php'),
+        body: {
+          'name': name,
+          'image': base64Image,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success') {
+          setState(() {
+            offers.add({'name': name, 'image': imagePath});
+            _filteredOffers = offers;
+          });
+        } else {
+          print('Error: ${responseData['message']}');
+        }
+      } else {
+        print('Server error: ${response.statusCode}');
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

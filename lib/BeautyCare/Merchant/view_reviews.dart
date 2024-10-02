@@ -1,6 +1,8 @@
-import 'dart:io' show Platform;
+import 'dart:convert';
+import 'dart:io' show HttpClient, Platform, X509Certificate;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ViewReviews extends StatefulWidget {
   const ViewReviews({super.key});
@@ -10,24 +12,48 @@ class ViewReviews extends StatefulWidget {
 }
 
 class _ViewReviewsState extends State<ViewReviews> {
-  // Mock data: replace this with actual data fetching logic
-  final List<Map<String, String>> reviews = [
-    {
-      'name': 'John Doe',
-      'rating': '5',
-      'comment': 'Great service!',
-    },
-    {
-      'name': 'Jane Smith',
-      'rating': '4',
-      'comment': 'Very professional.',
-    },
-    {
-      'name': 'Alex Johnson',
-      'rating': '3',
-      'comment': 'Satisfactory experience.',
-    },
-  ];
+  List<Map<String, dynamic>> reviews = [];
+
+  // Fetch data from the server
+  Future<void> fetchReviews() async {
+    final url = Uri.parse(
+        'https://localhost/mobile_apps/appointmentApp/fetch_comments.php');
+
+    // Bypassing certificate validation (only for development purposes)
+    HttpClient client = HttpClient()
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+    try {
+      final request = await client.getUrl(url);
+      final response = await request.close();
+      if (response.statusCode == 200) {
+        final String jsonResponse =
+            await response.transform(utf8.decoder).join();
+        final List<dynamic> data = json.decode(jsonResponse);
+        setState(() {
+          reviews = data
+              .map((review) => {
+                    'name': review['name'],
+                    'rating':
+                        review['rate'].toString(), // Convert rate to string
+                    'comment': review['comment']
+                  })
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load reviews');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReviews(); // Fetch the data when the screen loads
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,44 +78,45 @@ class _ViewReviewsState extends State<ViewReviews> {
             ),
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/bg6.jpg', // Replace with your image path
+              'assets/images/background/bg6.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          // Semi-transparent overlay for readability
           Positioned.fill(
             child: Container(
               color: Colors.black.withOpacity(0.4),
             ),
           ),
-          ListView.builder(
-            itemCount: reviews.length,
-            itemBuilder: (context, index) {
-              final review = reviews[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                color: Colors.white
-                    .withOpacity(0.8), // Slight transparency for the card
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(
-                      review['rating']!,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: const Color.fromARGB(255, 7, 111, 57),
-                  ),
-                  title: Text(
-                    review['name']!,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(review['comment']!),
+          reviews.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = reviews[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      color: Colors.white.withOpacity(0.8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              const Color.fromARGB(255, 7, 111, 57),
+                          child: Text(
+                            review['rating']!,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        title: Text(
+                          review['name']!,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(review['comment']!),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ],
       ),
     );

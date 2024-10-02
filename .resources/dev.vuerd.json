@@ -4,7 +4,7 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -569.7712,
+    "scrollTop": -530.7712,
     "scrollLeft": 0,
     "zoomLevel": 0.8,
     "show": 431,
@@ -1628,7 +1628,7 @@
       "oEW54J7ufyI_K9B32l_En": {
         "id": "oEW54J7ufyI_K9B32l_En",
         "tableId": "tvqjGteaCIfqqENzOOIMI",
-        "name": "shop_id",
+        "name": "user_id",
         "comment": "",
         "dataType": "INTEGER",
         "default": "",
@@ -1641,7 +1641,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1727673528421,
+          "updateAt": 1727839816248,
           "createAt": 1727673519675
         }
       },
@@ -3229,7 +3229,7 @@
       -1,
       {
         "options(notNull)": 1727673519672,
-        "name": 1727673528420,
+        "name": 1727839816247,
         "dataType": 1727673519672,
         "default": 1727673519672,
         "comment": 1727673519672

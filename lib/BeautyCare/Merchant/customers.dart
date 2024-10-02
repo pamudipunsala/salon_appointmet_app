@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class CustomerDetailsPage extends StatefulWidget {
   const CustomerDetailsPage({super.key});
@@ -10,28 +12,18 @@ class CustomerDetailsPage extends StatefulWidget {
 }
 
 class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
-  // List of customers with names and phone numbers for demonstration
-  final List<Map<String, String>> customers = [
-    {'name': 'John Doe', 'phone': '0773456789'},
-    {'name': 'Jane Smith', 'phone': '0783456678'},
-    {'name': 'Alice Johnson', 'phone': '0713423456'},
-    {'name': 'Bob Williams', 'phone': '0774567876'},
-    {'name': 'John Doe', 'phone': '0773456789'},
-    {'name': 'Jane Smith', 'phone': '0783456678'},
-    {'name': 'Alice Johnson', 'phone': '0713423456'},
-    {'name': 'Bob Williams', 'phone': '0774567876'},
-  ];
-
-  List<Map<String, dynamic>> _filteredCustomers = [];
+  List<Map<String, String>> _filteredCustomers = [];
   final TextEditingController _searchController = TextEditingController();
+  String userId = "1";
 
   void _filterCustomers() {
     final query = _searchController.text.toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        _filteredCustomers = customers;
+        // Show all customers when no search query
+        fetchCustomerData();
       } else {
-        _filteredCustomers = customers
+        _filteredCustomers = _filteredCustomers
             .where(
                 (customer) => customer['name']!.toLowerCase().contains(query))
             .toList();
@@ -42,8 +34,39 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _filteredCustomers = customers;
+    fetchCustomerData();
     _searchController.addListener(_filterCustomers);
+  }
+
+  Future<void> fetchCustomerData() async {
+    try {
+      var url = Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/fetch_customers.php');
+      var response = await http.post(url, body: {'type_id': '1'});
+
+      if (response.statusCode == 200) {
+        // Decode the JSON response
+        var data = json.decode(response.body);
+
+        // Check if it's an error response
+        if (data is List) {
+          setState(() {
+            _filteredCustomers =
+                List<Map<String, String>>.from(data.map((item) => {
+                      'name': item['name'] as String,
+                      'phone': item['phone'] as String,
+                      'email': item['email'] as String,
+                    }));
+          });
+        } else if (data is Map && data.containsKey("error")) {
+          print("Error: ${data['error']}");
+        }
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 
   @override
@@ -51,15 +74,6 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
     _searchController.removeListener(_filterCustomers);
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _addSalon(String name, String? imagePath) {
-    if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        customers.add({'name': name});
-        _filteredCustomers = customers;
-      });
-    }
   }
 
   @override
@@ -124,50 +138,65 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                     color: Colors.black.withOpacity(0.4),
                   ),
                 ),
-                ListView.builder(
-                  itemCount: _filteredCustomers.length,
-                  itemBuilder: (context, index) {
-                    final customer = _filteredCustomers[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Customer details
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  customer['name']!,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                _filteredCustomers.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: _filteredCustomers.length,
+                        itemBuilder: (context, index) {
+                          final customer = _filteredCustomers[index];
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Customer details
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        customer['name']!,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        customer['phone']!,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        customer['email']!,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  customer['phone']!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          );
+                        },
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
                       ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
