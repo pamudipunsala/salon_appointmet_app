@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ReviewDetails extends StatefulWidget {
   const ReviewDetails({super.key});
@@ -12,19 +14,61 @@ class ReviewDetails extends StatefulWidget {
 class _ReviewDetailsState extends State<ReviewDetails> {
   final TextEditingController _commentController = TextEditingController();
   double _rating = 0.0;
+  String _name = "LoggedInUser";
 
   // Function to submit the review
-  void _submitReview() {
+  void _submitReview() async {
     String comment = _commentController.text;
-    // Perform any necessary validation here
+
     if (_rating == 0.0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please provide a rating and a comment")),
       );
-    } else {
-      // Handle submission logic here
-      print("Rating: $_rating");
-      print("Comment: $comment");
+      return;
+    }
+
+    String _name = 'John Doe';
+
+    try {
+      var response = await http.post(
+        Uri.parse(
+            'http://192.168.8.116/mobile_apps/appointmentApp/add_reviews.php'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'name': _name,
+          'rate': _rating,
+          'comment': comment,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print(data);
+
+        if (data['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Review submitted successfully")),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text(data['message'] ?? "Server error. Try again later")),
+          );
+        }
+      } else {
+        print('Server returned an error: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Server error. Try again later")),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to connect. Try again later")),
+      );
     }
   }
 

@@ -17,7 +17,7 @@ class _ViewReviewsState extends State<ViewReviews> {
   // Fetch data from the server
   Future<void> fetchReviews() async {
     final url = Uri.parse(
-        'https://localhost/mobile_apps/appointmentApp/fetch_comments.php');
+        'https://192.168.8.116/mobile_apps/appointmentApp/fetch_comments.php');
 
     // Bypassing certificate validation (only for development purposes)
     HttpClient client = HttpClient()

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,7 +25,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
   List<Map<String, dynamic>> _filteredServices = [];
   final TextEditingController _searchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
-  String? _imagePath;
+  File? _image;
 
   @override
   void initState() {
@@ -48,75 +48,68 @@ class _AddShopsPageState extends State<AddShopsPage> {
   }
 
   Future<void> _pickImage() async {
-    PermissionStatus permissionStatus;
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    // Check the platform and request the corresponding permission
-    if (Platform.isAndroid) {
-      permissionStatus = await Permission.storage.status;
-    } else if (Platform.isIOS) {
-      permissionStatus = await Permission.photos.status;
-    } else {
-      return;
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
+  }
 
-    // Check if permission is granted
-    if (permissionStatus.isGranted) {
-      print("Permission granted, opening gallery...");
-      // If already granted, proceed to pick the image
-      final XFile? image =
-          await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _imagePath = image.path;
-          print("Image selected: $_imagePath");
-        });
-      } else {
-        print("No image selected");
-      }
-    } else if (permissionStatus.isDenied) {
-      print("Permission denied, requesting permission...");
-      // If denied, request permission again
-      if (Platform.isAndroid) {
-        permissionStatus = await Permission.storage.request();
-      } else if (Platform.isIOS) {
-        permissionStatus = await Permission.photos.request();
-      }
+  void _addShops(String name, String? imagePath) async {
+    if (name.isNotEmpty && imagePath != null) {
+      try {
+        var requestData = {
+          'name': name,
+          'image_path': imagePath,
+        };
 
-      if (permissionStatus.isGranted) {
-        print("Permission granted after request, opening gallery...");
-        // If permission is granted after the request, proceed to pick the image
-        final XFile? image =
-            await _imagePicker.pickImage(source: ImageSource.gallery);
-        if (image != null) {
-          setState(() {
-            _imagePath = image.path;
-            print("Image selected: $_imagePath");
-          });
+        // Log the data being sent for debugging
+        print('Sending Data: $requestData');
+
+        // Send the data using HTTP POST
+        var response = await http.post(
+          Uri.parse(
+              'http://192.168.8.116/mobile_apps/appointmentApp/add_shops.php'),
+          body: requestData,
+        );
+
+        // Log the response from the server
+        print('Response Status: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          var responseData = jsonDecode(response.body);
+          if (responseData['success'] == true) {
+            setState(() {
+              services.add({'name': name, 'image': imagePath});
+              _filteredServices = services;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Shop added successfully')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${responseData['message']}')),
+            );
+          }
         } else {
-          print("No image selected");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Failed to add shop. Please try again.')),
+          );
         }
-      } else if (permissionStatus.isDenied) {
-        print("Permission still denied");
-        // If still denied, show a message or handle accordingly
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Permission denied to access the gallery.')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
-    } else if (permissionStatus.isPermanentlyDenied) {
-      print("Permission permanently denied, redirecting to settings...");
-      // If permanently denied, redirect to app settings
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              const Text('Please enable gallery access from the settings.'),
-          action: SnackBarAction(
-            label: 'Settings',
-            onPressed: () {
-              openAppSettings();
-            },
-          ),
-        ),
+        const SnackBar(
+            content: Text('Please enter a shop name and select an image.')),
       );
     }
   }
@@ -131,6 +124,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
             ? CupertinoAlertDialog(
                 title: const Text('Add New Shops'),
                 content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     CupertinoTextField(
                       controller: _shopNameController,
@@ -142,7 +136,6 @@ class _AddShopsPageState extends State<AddShopsPage> {
                       child: const Text('Select Image'),
                       onPressed: _pickImage,
                     ),
-                    if (_imagePath != null) Text('Image selected: $_imagePath'),
                   ],
                 ),
                 actions: [
@@ -156,7 +149,8 @@ class _AddShopsPageState extends State<AddShopsPage> {
                   CupertinoDialogAction(
                     child: const Text('Add'),
                     onPressed: () {
-                      _addShops(_shopNameController.text, _imagePath);
+                      String shopName = _shopNameController.text.trim();
+                      _addShops(shopName, _image?.path);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -181,7 +175,6 @@ class _AddShopsPageState extends State<AddShopsPage> {
                         backgroundColor: const Color.fromARGB(255, 7, 111, 57),
                       ),
                     ),
-                    if (_imagePath != null) Text('Image selected: $_imagePath'),
                   ],
                 ),
                 actions: [
@@ -193,7 +186,8 @@ class _AddShopsPageState extends State<AddShopsPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _addShops(_shopNameController.text, _imagePath);
+                      String shopName = _shopNameController.text.trim();
+                      _addShops(shopName, _image?.path);
                       Navigator.of(context).pop();
                     },
                     child: const Text('Add'),
@@ -202,41 +196,6 @@ class _AddShopsPageState extends State<AddShopsPage> {
               );
       },
     );
-  }
-
-  void _addShops(String name, String? imagePath) async {
-    if (name.isNotEmpty && imagePath != null) {
-      var requestData = {
-        'name': name,
-        'image_path': imagePath,
-      };
-
-      var response = await http.post(
-        Uri.parse('http://localhost/mobile_apps/appointmentApp/add_shops.php'),
-        body: requestData,
-      );
-
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        if (responseData['success'] == true) {
-          setState(() {
-            services.add({'name': name, 'image': imagePath});
-            _filteredServices = services;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Shop added successfully')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${responseData['message']}')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add shop')),
-        );
-      }
-    }
   }
 
   @override
@@ -305,85 +264,38 @@ class _AddShopsPageState extends State<AddShopsPage> {
                             onPressed: () {
                               _showAddShopDialog(context);
                             },
-                            child: const Icon(CupertinoIcons.add,
-                                color: Colors.white),
+                            child: const Text('Add Shop'),
                           )
-                        : IconButton(
-                            icon: const Icon(Icons.add, color: Colors.white),
+                        : ElevatedButton(
                             onPressed: () {
                               _showAddShopDialog(context);
                             },
-                            color: const Color.fromARGB(255, 7, 111, 57),
+                            child: const Text('Add Shop'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 7, 111, 57),
+                            ),
                           ),
                   ],
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 3 / 2,
-                    ),
-                    itemCount: _filteredServices.length,
-                    itemBuilder: (context, index) {
-                      final service = _filteredServices[index];
-                      return Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 3),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                service['image']!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 20,
-                            child: Platform.isIOS
-                                ? CupertinoButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 22.0),
-                                    color:
-                                        const Color.fromARGB(255, 7, 111, 57),
-                                    onPressed: () {},
-                                    child: Text(
-                                      service['name']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 7, 111, 57),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0, horizontal: 22.0),
-                                    ),
-                                    onPressed: () {},
-                                    child: Text(
-                                      service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                child: ListView.builder(
+                  itemCount: _filteredServices.length,
+                  itemBuilder: (context, index) {
+                    final service = _filteredServices[index];
+                    return Card(
+                      color: Colors.white.withOpacity(0.8),
+                      child: ListTile(
+                        leading: Image.asset(
+                          service['image'],
+                          width: 50,
+                          height: 50,
+                        ),
+                        title: Text(service['name']),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

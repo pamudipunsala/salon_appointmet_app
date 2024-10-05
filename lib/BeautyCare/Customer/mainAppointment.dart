@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MainAppointmentPage extends StatefulWidget {
   const MainAppointmentPage({super.key});
@@ -10,16 +12,12 @@ class MainAppointmentPage extends StatefulWidget {
 }
 
 class _MainAppointmentPageState extends State<MainAppointmentPage> {
-  DateTime? _startDate;
-  DateTime? _endDate;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   List<String> selectedServices = [];
   List<String> selectedLocations = [];
   List<String> selectedCategories = [];
 
-  final TextEditingController _startDateController = TextEditingController();
-  final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
   final List<String> services = [
@@ -434,6 +432,45 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
     );
   }
 
+  Future<void> _bookAppointment() async {
+    final String url =
+        'http://192.168.8.116/mobile_apps/appointmentApp/add_appointment.php';
+
+    // Prepare the data to send to the database
+    final Map<String, String> appointmentData = {
+      'number': '12345',
+      'date':
+          "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}",
+      'time': "${selectedTime!.hour}:${selectedTime!.minute}",
+      'service': selectedServices.join(','),
+      'category': selectedCategories.join(','),
+      'location': selectedLocations.join(','),
+      'status': 'pending',
+      'contact': '0123456789',
+      'shop_id': '1',
+      'user_id': '1'
+    };
+
+    try {
+      // Send the HTTP POST request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(appointmentData),
+      );
+
+      if (response.statusCode == 200) {
+        // If the server returns a success response
+        print('Appointment booked successfully: ${response.body}');
+      } else {
+        // If the server returns an error response
+        print('Failed to book appointment: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -545,7 +582,15 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 8.0, horizontal: 22.0),
                               color: const Color.fromARGB(255, 7, 111, 57),
-                              onPressed: () {},
+                              onPressed: () {
+                                if (selectedDate != null &&
+                                    selectedTime != null &&
+                                    selectedServices.isNotEmpty) {
+                                  _bookAppointment();
+                                } else {
+                                  print('Please fill in all required fields');
+                                }
+                              },
                               child: const Text(
                                 "Book Appointment",
                                 style: TextStyle(fontSize: 16.0),
@@ -553,7 +598,13 @@ class _MainAppointmentPageState extends State<MainAppointmentPage> {
                             )
                           : ElevatedButton(
                               onPressed: () {
-                                // Handle booking submission
+                                if (selectedDate != null &&
+                                    selectedTime != null &&
+                                    selectedServices.isNotEmpty) {
+                                  _bookAppointment();
+                                } else {
+                                  print('Please fill in all required fields');
+                                }
                               },
                               child: const Text("Book Appointment"),
                             ),

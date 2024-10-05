@@ -201,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
 
                             // Create the URL for your PHP script
                             final url = Uri.parse(
-                                'http://localhost/mobile_apps/appointmentApp/login.php');
+                                'http://192.168.8.116/mobile_apps/appointmentApp/login.php');
 
                             // Prepare the data to send
                             final body = jsonEncode(

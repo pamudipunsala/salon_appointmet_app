@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart'; // For date formatting
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class AddCategoryPage extends StatefulWidget {
   const AddCategoryPage({super.key});
@@ -75,34 +76,36 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   }
 
   Future<void> _pickImage() async {
-    PermissionStatus permissionStatus;
+  PermissionStatus permissionStatus;
 
-    if (Platform.isAndroid) {
-      permissionStatus = await Permission.storage.request();
-    } else if (Platform.isIOS) {
-      permissionStatus = await Permission.photos.request();
-    } else {
-      return;
+  // Request the correct permission based on platform
+  if (Platform.isAndroid) {
+    permissionStatus = await Permission.storage.request();
+  } else if (Platform.isIOS) {
+    permissionStatus = await Permission.photos.request();
+  } else {
+    return;
+  }
+
+  // Check if the permission is granted
+  if (permissionStatus.isGranted) {
+    // If permission granted, pick the image
+    final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _imagePath = image.path;
+      });
     }
-
-    if (permissionStatus.isGranted) {
-      // If permission granted, pick the image
-      final XFile? image =
-          await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _imagePath = image.path;
-        });
-      }
-    } else {
-      print('Permission denied to access the gallery.');
-      // Optionally show a message or redirect to app settings
-      if (await Permission.storage.isPermanentlyDenied ||
-          await Permission.photos.isPermanentlyDenied) {
-        openAppSettings();
-      }
+  } else {
+    // Permission denied
+    print('Permission denied to access the gallery.');
+    if (await Permission.storage.isPermanentlyDenied ||
+        await Permission.photos.isPermanentlyDenied) {
+      // Open app settings if permission is permanently denied
+      openAppSettings();
     }
   }
+}
 
   void _showAddSalonDialog(BuildContext context) {
     final TextEditingController _salonNameController = TextEditingController();
@@ -187,12 +190,34 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     );
   }
 
-  void _addSalon(String name, String? imagePath) {
+  void _addSalon(String name, String? imagePath) async {
     if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        categories.add({'name': name, 'image': imagePath});
-        _filteredCategories = categories;
-      });
+      try {
+        var request = http.MultipartRequest(
+            'POST',
+            Uri.parse(
+                'http://localhost/mobile_apps/appointmentApp/categories.php'));
+
+        request.fields['name'] = name;
+
+        // Attach the image file
+        var imageFile = await http.MultipartFile.fromPath('image', imagePath);
+        request.files.add(imageFile);
+
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
+          setState(() {
+            categories.add({'name': name, 'image': imagePath});
+            _filteredCategories = categories;
+          });
+          print('Category added successfully!');
+        } else {
+          print('Failed to add category. Status Code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
     }
   }
 

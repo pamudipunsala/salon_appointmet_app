@@ -165,7 +165,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
   void _addService(String name, String? imagePath) async {
   if (name.isNotEmpty && imagePath != null) {
     // URL to your PHP script
-    final url = Uri.parse('https://yourserver.com/path_to_php/add_service.php');
+    final url = Uri.parse('https://localhost/mobile_apps/appointmentApp/add_service.php');
 
     // Create a request body
     final requestBody = {
