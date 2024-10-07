@@ -27,6 +27,9 @@ class _AddShopsPageState extends State<AddShopsPage> {
   final ImagePicker _imagePicker = ImagePicker();
   File? _image;
 
+  int typeId = 1;
+  int userId = 123;
+
   @override
   void initState() {
     super.initState();
@@ -58,33 +61,33 @@ class _AddShopsPageState extends State<AddShopsPage> {
     }
   }
 
-  void _addShops(String name, String? imagePath) async {
-    if (name.isNotEmpty && imagePath != null) {
+  Future<void> _addShops(
+      String name, File? imageFile, int typeId, int userId) async {
+    if (name.isNotEmpty && imageFile != null) {
       try {
-        var requestData = {
-          'name': name,
-          'image_path': imagePath,
-        };
+        var uri = Uri.parse(
+            'http://192.168.8.116/mobile_apps/appointmentApp/add_shops.php');
+        var request = http.MultipartRequest('POST', uri);
 
-        // Log the data being sent for debugging
-        print('Sending Data: $requestData');
+        // Adding fields
+        request.fields['name'] = name;
+        request.fields['type_id'] = typeId.toString();
+        request.fields['user_id'] = userId.toString();
 
-        // Send the data using HTTP POST
-        var response = await http.post(
-          Uri.parse(
-              'http://192.168.8.116/mobile_apps/appointmentApp/add_shops.php'),
-          body: requestData,
-        );
+        // Attach the image file (make sure the path is accessible)
+        request.files
+            .add(await http.MultipartFile.fromPath('image', imageFile.path));
 
-        // Log the response from the server
-        print('Response Status: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        // Send the request
+        var response = await request.send();
 
         if (response.statusCode == 200) {
-          var responseData = jsonDecode(response.body);
-          if (responseData['success'] == true) {
+          var responseData = await http.Response.fromStream(response);
+          var jsonData = jsonDecode(responseData.body);
+
+          if (jsonData['success'] == true) {
             setState(() {
-              services.add({'name': name, 'image': imagePath});
+              services.add({'name': name, 'image': imageFile.path});
               _filteredServices = services;
             });
             ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +95,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${responseData['message']}')),
+              SnackBar(content: Text('Error: ${jsonData['message']}')),
             );
           }
         } else {
@@ -150,7 +153,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                     child: const Text('Add'),
                     onPressed: () {
                       String shopName = _shopNameController.text.trim();
-                      _addShops(shopName, _image?.path);
+                      _addShops(shopName, _image, typeId, userId);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -187,7 +190,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
                   TextButton(
                     onPressed: () {
                       String shopName = _shopNameController.text.trim();
-                      _addShops(shopName, _image?.path);
+                      _addShops(shopName, _image, typeId, userId);
                       Navigator.of(context).pop();
                     },
                     child: const Text('Add'),
