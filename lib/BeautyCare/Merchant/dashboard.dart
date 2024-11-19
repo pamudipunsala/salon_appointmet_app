@@ -1,7 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/add_branches.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/add_offers.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/add_services.dart';
@@ -10,10 +9,14 @@ import 'package:salon_appointment_app/BeautyCare/Merchant/appointment_summary.da
 import 'package:salon_appointment_app/BeautyCare/Merchant/approve_appointment.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/customers.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/view_reviews.dart';
-import 'package:salon_appointment_app/menu.dart';
 
 class BeauticianDashboardPage extends StatefulWidget {
-  const BeauticianDashboardPage({super.key});
+  final String? userId;
+  final String businessTypeId;
+
+  const BeauticianDashboardPage(
+      {Key? key, this.userId, required this.businessTypeId})
+      : super(key: key);
 
   @override
   _BeauticianDashboardPageState createState() =>
@@ -21,34 +24,64 @@ class BeauticianDashboardPage extends StatefulWidget {
 }
 
 class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
+  late String? userId;
+  late String businessTypeId;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId;
+    businessTypeId = widget.businessTypeId;
+  }
+
   final List<Map<String, dynamic>> dashboardItems = [
-    {'title': 'Add Shops', 'icon': Icons.shop, 'page': AddShopsPage()},
+    {
+      'title': 'Add Shops',
+      'icon': Icons.shop,
+      'page': (userId, businessTypeId) =>
+          AddShopsPage(userId: userId, businessTypeId: businessTypeId)
+    },
     {
       'title': 'Add Branches',
       'icon': Icons.store,
-      'page': AddSalonBranchesPage()
+      'page': (userId, businessTypeId) =>
+          AddSalonBranchesPage(userId: userId, businessTypeId: businessTypeId)
     },
-    {'title': 'Customers', 'icon': Icons.people, 'page': CustomerDetailsPage()},
+    {
+      'title': 'Customers',
+      'icon': Icons.people,
+      'page': (userId, businessTypeId) =>
+          CustomerDetailsPage(userId: userId, businessTypeId: businessTypeId)
+    },
     {
       'title': 'Add Services',
       'icon': Icons.room_service,
-      'page': AddServicesPage()
+      'page': (userId, businessTypeId) =>
+          AddServicesPage(userId: userId, businessTypeId: businessTypeId)
     },
-    {'title': 'Add Offers', 'icon': Icons.local_offer, 'page': AddOffersPage()},
+    {
+      'title': 'Add Offers',
+      'icon': Icons.local_offer,
+      'page': (userId, businessTypeId) =>
+          AddOffersPage(userId: userId, businessTypeId: businessTypeId)
+    },
     {
       'title': 'Appointment Summary',
       'icon': Icons.calendar_today,
-      'page': AppointmentSummaryPage()
+      'page': (userId, businessTypeId) =>
+          AppointmentSummaryPage(userId: userId, businessTypeId: businessTypeId)
     },
     {
       'title': 'Approve Appointments',
       'icon': Icons.calendar_today,
-      'page': ApproveAppointmentScreen()
+      'page': (userId, businessTypeId) => ApproveAppointmentScreen(
+          userId: userId, businessTypeId: businessTypeId)
     },
     {
       'title': 'Comments & Review',
       'icon': Icons.reviews,
-      'page': ViewReviews()
+      'page': (userId, businessTypeId) =>
+          ViewReviews(userId: userId, businessTypeId: businessTypeId)
     },
   ];
 
@@ -100,10 +133,10 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
             padding: const EdgeInsets.all(26.0),
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Display two items per row
+                crossAxisCount: 2, 
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                childAspectRatio: 1, // Keep squares
+                childAspectRatio: 1, 
               ),
               itemCount: dashboardItems.length,
               itemBuilder: (context, index) {
@@ -112,7 +145,9 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => item['page']),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              item['page'](userId, businessTypeId)),
                     );
                   },
                   child: Container(

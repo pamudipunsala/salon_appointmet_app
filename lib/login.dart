@@ -21,6 +21,54 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  Future<void> _saveUserId(String userId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', userId); // Save the userId
+    print("Saved userId to SharedPreferences: $userId");
+  }
+
+  void _login() async {
+    String username = usernameController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorDialog(context, "Please enter both username and password.");
+      return;
+    }
+
+    final url =
+        Uri.parse('http://localhost/mobile_apps/appointmentApp/login.php');
+    final body = jsonEncode({'username': username, 'password': password});
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success') {
+          final String userId = responseData['userId'].toString();
+          await _saveUserId(userId);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BusinessTypePage(userId: userId),
+            ),
+          );
+        } else {
+          _showErrorDialog(context, responseData['message']);
+        }
+      } else {
+        _showErrorDialog(context, "Failed to connect to the server.");
+      }
+    } catch (e) {
+      _showErrorDialog(context, "An error occurred: $e");
+    }
+  }
+
   // Function to show error dialog
   void _showErrorDialog(BuildContext context, String message) {
     if (Platform.isIOS) {
@@ -189,66 +237,15 @@ class _LoginPageState extends State<LoginPage> {
                   // Login button
                   Platform.isIOS
                       ? CupertinoButton(
-                          onPressed: () async {
-                            String username = usernameController.text.trim();
-                            String password = passwordController.text.trim();
-
-                            if (username.isEmpty || password.isEmpty) {
-                              _showErrorDialog(context,
-                                  "Please enter both username and password.");
-                              return;
-                            }
-
-                            // Create the URL for your PHP script
-                            final url = Uri.parse(
-                                'http://192.168.8.116/mobile_apps/appointmentApp/login.php');
-
-                            // Prepare the data to send
-                            final body = jsonEncode(
-                                {'username': username, 'password': password});
-
-                            // Send the HTTP request
-                            try {
-                              final response = await http.post(
-                                url,
-                                headers: {"Content-Type": "application/json"},
-                                body: body,
-                              );
-
-                              if (response.statusCode == 200) {
-                                // Parse the response
-                                final Map<String, dynamic> responseData =
-                                    jsonDecode(response.body);
-                                if (responseData['status'] == 'success') {
-                                  // Navigate to the next page
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            BusinessTypePage()),
-                                  );
-                                } else {
-                                  _showErrorDialog(
-                                      context, responseData['message']);
-                                }
-                              } else {
-                                _showErrorDialog(context,
-                                    "Failed to connect to the server.");
-                              }
-                            } catch (e) {
-                              _showErrorDialog(
-                                  context, "An error occurred: $e");
-                            }
+                          onPressed: () {
+                            _login(); // Call the existing _login function.
                           },
                           child: const Text('Login'),
                           color: Color.fromARGB(255, 23, 92, 14),
                         )
                       : ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BusinessTypePage()));
+                            _login(); // Call the existing _login function.
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 23, 92, 14),
@@ -261,6 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text('Login',
                               style: TextStyle(color: Colors.white)),
                         ),
+
                   const SizedBox(height: 20.0),
 
                   Center(
@@ -279,7 +277,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Navigate to the SignUp page
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

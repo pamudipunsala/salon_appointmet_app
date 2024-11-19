@@ -6,21 +6,42 @@ import 'package:salon_appointment_app/BeautyCare/Merchant/dashboard.dart';
 import 'package:salon_appointment_app/menu.dart';
 
 class UserRolePage extends StatefulWidget {
-  const UserRolePage({super.key});
+  final String? userId;
+  final String businessTypeId;
+
+  const UserRolePage(
+      {Key? key, required this.userId, required this.businessTypeId})
+      : super(key: key);
 
   @override
   _UserRolePageState createState() => _UserRolePageState();
 }
 
 class _UserRolePageState extends State<UserRolePage> {
+  late String? userId;
+  late String businessTypeId;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId;
+    businessTypeId = widget.businessTypeId;
+  }
+
   // List of dashboard items with text and icons
   final List<Map<String, dynamic>> dashboardItems = [
     {
       'title': 'Merchant',
       'icon': Icons.gpp_good_sharp,
-      'page': BeauticianDashboardPage()
+      'page': (userId, businessTypeId) => BeauticianDashboardPage(
+          userId: userId, businessTypeId: businessTypeId),
     },
-    {'title': 'Users', 'icon': Icons.people, 'page': CustomerDashboardPage()},
+    {
+      'title': 'Users',
+      'icon': Icons.people,
+      'page': (userId, businessTypeId) =>
+          CustomerDashboardPage(userId: userId, businessTypeId: businessTypeId),
+    },
   ];
 
   @override
@@ -83,7 +104,9 @@ class _UserRolePageState extends State<UserRolePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => item['page']),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              item['page'](userId, businessTypeId)),
                     );
                   },
                   child: Container(

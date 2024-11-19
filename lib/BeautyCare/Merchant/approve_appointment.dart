@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ApproveAppointmentScreen extends StatefulWidget {
-  const ApproveAppointmentScreen({super.key});
+  final String? userId;
+
+  const ApproveAppointmentScreen({Key? key, required this.userId, required businessTypeId}) : super(key: key);
 
   @override
   _ApproveAppointmentScreenState createState() =>

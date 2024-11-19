@@ -6,7 +6,9 @@ import 'package:salon_appointment_app/BeautyCare/Merchant/appointment_history.da
 import 'package:table_calendar/table_calendar.dart';
 
 class AppointmentSummaryPage extends StatefulWidget {
-  const AppointmentSummaryPage({super.key});
+  final String? userId;
+
+  const AppointmentSummaryPage({Key? key, required this.userId, required businessTypeId}) : super(key: key);
 
   @override
   _AppointmentSummaryPageState createState() => _AppointmentSummaryPageState();

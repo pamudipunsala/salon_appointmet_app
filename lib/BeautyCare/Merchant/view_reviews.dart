@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ViewReviews extends StatefulWidget {
-  const ViewReviews({super.key});
+  final String? userId;
+
+  const ViewReviews({Key? key, required this.userId, required businessTypeId}) : super(key: key);
 
   @override
   _ViewReviewsState createState() => _ViewReviewsState();
@@ -17,7 +19,7 @@ class _ViewReviewsState extends State<ViewReviews> {
   // Fetch data from the server
   Future<void> fetchReviews() async {
     final url = Uri.parse(
-        'https://192.168.8.116/mobile_apps/appointmentApp/fetch_comments.php');
+        'https://localhost/mobile_apps/appointmentApp/fetch_comments.php');
 
     // Bypassing certificate validation (only for development purposes)
     HttpClient client = HttpClient()

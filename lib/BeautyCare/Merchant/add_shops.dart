@@ -7,43 +7,61 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
 class AddShopsPage extends StatefulWidget {
-  const AddShopsPage({super.key});
+  final String? userId;
+  final String? businessTypeId;
+
+  const AddShopsPage({Key? key, this.userId, this.businessTypeId})
+      : super(key: key);
 
   @override
   _AddShopsPageState createState() => _AddShopsPageState();
 }
 
 class _AddShopsPageState extends State<AddShopsPage> {
-  final List<Map<String, dynamic>> services = [
-    {'name': 'Salon CB', 'image': 'assets/images/img10.jpeg'},
-    {'name': 'Salon Neesha Manahari', 'image': 'assets/images/img11.jpeg'},
-    {'name': 'Brides by Udara Malshan', 'image': 'assets/images/img12.jpeg'},
-    {'name': 'Salon Boneetha', 'image': 'assets/images/img13.jpeg'},
-    {'name': 'The Blushing Nor', 'image': 'assets/images/img14.jpeg'},
-  ];
-
+  List<Map<String, dynamic>> _services = [];
   List<Map<String, dynamic>> _filteredServices = [];
   final TextEditingController _searchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
   File? _image;
 
-  int typeId = 1;
-  int userId = 123;
-
   @override
   void initState() {
     super.initState();
-    _filteredServices = services;
+    _fetchShops();
     _searchController.addListener(_filterServices);
+  }
+
+  Future<void> _fetchShops() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/view_shops.php?user_id=${widget.userId}&type_id=${widget.businessTypeId}'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _services = data.map((shop) {
+            return {
+              'name': shop['name'],
+              'image': shop['image'],
+            };
+          }).toList();
+          _filteredServices = _services;
+        });
+      } else {
+        print('Failed to fetch shops.');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   void _filterServices() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        _filteredServices = services;
+        _filteredServices = _services;
       } else {
-        _filteredServices = services
+        _filteredServices = _services
             .where((service) => service['name']!.toLowerCase().contains(query))
             .toList();
       }
@@ -52,7 +70,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
 
   Future<void> _pickImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -61,35 +79,31 @@ class _AddShopsPageState extends State<AddShopsPage> {
     }
   }
 
-  Future<void> _addShops(
-      String name, File? imageFile, int typeId, int userId) async {
-    if (name.isNotEmpty && imageFile != null) {
+  Future<void> _addShops(String name, File? imageFile, String? businessTypeId,
+      String? userId) async {
+    if (name.isNotEmpty &&
+        imageFile != null &&
+        userId != null &&
+        businessTypeId != null) {
       try {
         var uri = Uri.parse(
-            'http://192.168.8.116/mobile_apps/appointmentApp/add_shops.php');
+            'http://localhost/mobile_apps/appointmentApp/add_shops.php');
         var request = http.MultipartRequest('POST', uri);
 
-        // Adding fields
         request.fields['name'] = name;
-        request.fields['type_id'] = typeId.toString();
-        request.fields['user_id'] = userId.toString();
+        request.fields['type_id'] = businessTypeId;
+        request.fields['user_id'] = userId;
 
-        // Attach the image file (make sure the path is accessible)
         request.files
             .add(await http.MultipartFile.fromPath('image', imageFile.path));
 
-        // Send the request
         var response = await request.send();
+        var responseData = await http.Response.fromStream(response);
 
-        if (response.statusCode == 200) {
-          var responseData = await http.Response.fromStream(response);
+        if (responseData.body.isNotEmpty && responseData.statusCode == 200) {
           var jsonData = jsonDecode(responseData.body);
-
           if (jsonData['success'] == true) {
-            setState(() {
-              services.add({'name': name, 'image': imageFile.path});
-              _filteredServices = services;
-            });
+            _fetchShops();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Shop added successfully')),
             );
@@ -100,8 +114,7 @@ class _AddShopsPageState extends State<AddShopsPage> {
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Failed to add shop. Please try again.')),
+            const SnackBar(content: Text('Invalid response from the server')),
           );
         }
       } catch (e) {
@@ -112,7 +125,8 @@ class _AddShopsPageState extends State<AddShopsPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Please enter a shop name and select an image.')),
+            content: Text(
+                'Please enter a shop name, select an image, and ensure required details are provided.')),
       );
     }
   }
@@ -153,7 +167,12 @@ class _AddShopsPageState extends State<AddShopsPage> {
                     child: const Text('Add'),
                     onPressed: () {
                       String shopName = _shopNameController.text.trim();
-                      _addShops(shopName, _image, typeId, userId);
+                      _addShops(
+                        shopName,
+                        _image,
+                        widget.businessTypeId, // Pass businessTypeId
+                        widget.userId,
+                      );
                       Navigator.of(context).pop();
                     },
                   ),
@@ -190,7 +209,12 @@ class _AddShopsPageState extends State<AddShopsPage> {
                   TextButton(
                     onPressed: () {
                       String shopName = _shopNameController.text.trim();
-                      _addShops(shopName, _image, typeId, userId);
+                      _addShops(
+                        shopName,
+                        _image,
+                        widget.businessTypeId, // Pass businessTypeId
+                        widget.userId,
+                      );
                       Navigator.of(context).pop();
                     },
                     child: const Text('Add'),
@@ -283,23 +307,33 @@ class _AddShopsPageState extends State<AddShopsPage> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredServices.length,
-                  itemBuilder: (context, index) {
-                    final service = _filteredServices[index];
-                    return Card(
-                      color: Colors.white.withOpacity(0.8),
-                      child: ListTile(
-                        leading: Image.asset(
-                          service['image'],
-                          width: 50,
-                          height: 50,
-                        ),
-                        title: Text(service['name']),
-                      ),
-                    );
-                  },
-                ),
+                child: _filteredServices.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: _filteredServices.length,
+                        itemBuilder: (context, index) {
+                          final service = _filteredServices[index];
+                          return Card(
+                            margin: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(8.0),
+                              title: Text(service['name']),
+                              leading: Image.network(
+                                'http://localhost/mobile_apps/appointmentApp/${service['image']}',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  // Implement delete functionality if needed
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : const Center(child: Text('No shops found')),
               ),
             ],
           ),

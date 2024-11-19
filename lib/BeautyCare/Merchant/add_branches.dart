@@ -7,40 +7,89 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
 class AddSalonBranchesPage extends StatefulWidget {
-  const AddSalonBranchesPage({super.key});
+  final String? userId;
+
+  const AddSalonBranchesPage(
+      {Key? key, required this.userId, required businessTypeId})
+      : super(key: key);
 
   @override
   _AddSalonBranchesPageState createState() => _AddSalonBranchesPageState();
 }
 
 class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
-  final List<Map<String, dynamic>> services = [
-    {'name': 'Colombo 05', 'image': 'assets/images/img10.jpeg'},
-    {'name': 'Nugegoda', 'image': 'assets/images/img11.jpeg'},
-    {'name': 'Maharagama', 'image': 'assets/images/img12.jpeg'},
-    {'name': 'Gampaha', 'image': 'assets/images/img13.jpeg'},
-    {'name': 'Kandy', 'image': 'assets/images/img14.jpeg'},
-  ];
-
+  List<Map<String, dynamic>> _branches = [];
   List<Map<String, dynamic>> _filteredServices = [];
   final TextEditingController _searchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
-  String? _imagePath;
+  File? _image;
+
+  int shopId = 58;
 
   @override
   void initState() {
     super.initState();
-    _filteredServices = services;
     _searchController.addListener(_filterServices);
+    _fetchBranches();
+  }
+
+  Future<void> _addBranches(String name, File? imageFile, int shopId) async {
+    if (name.isNotEmpty && imageFile != null) {
+      try {
+        var uri = Uri.parse(
+            'http://localhost/mobile_apps/appointmentApp/add_branches.php');
+        var request = http.MultipartRequest('POST', uri);
+
+        request.fields['name'] = name;
+        request.fields['shop_id'] = shopId.toString();
+
+        // Attach the image file
+        request.files
+            .add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+        var response = await request.send();
+        var responseData = await http.Response.fromStream(response);
+
+        // Log the response body for debugging
+        print('Response Body: ${responseData.body}');
+
+        if (responseData.statusCode == 200) {
+          var jsonData = jsonDecode(responseData.body);
+          if (jsonData['success'] == true) {
+            _fetchBranches();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Branch added successfully')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${jsonData['message']}')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid response from the server')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter a shop name and select an image.')),
+      );
+    }
   }
 
   void _filterServices() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        _filteredServices = services;
+        _filteredServices = _branches;
       } else {
-        _filteredServices = services
+        _filteredServices = _branches
             .where((service) => service['name']!.toLowerCase().contains(query))
             .toList();
       }
@@ -48,49 +97,56 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
   }
 
   Future<void> _pickImage() async {
-    PermissionStatus permissionStatus;
-
-    if (Platform.isAndroid) {
-      permissionStatus = await Permission.storage.request();
-    } else if (Platform.isIOS) {
-      permissionStatus = await Permission.photos.request();
-    } else {
-      return;
-    }
-
-    if (permissionStatus.isGranted) {
-      // If permission granted, pick the image
-      final XFile? image =
-          await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _imagePath = image.path;
-        });
-      }
-    } else {
-      print('Permission denied to access the gallery.');
-      // Optionally show a message or redirect to app settings
-      if (await Permission.storage.isPermanentlyDenied ||
-          await Permission.photos.isPermanentlyDenied) {
-        openAppSettings();
-      }
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
 
-  void _showAddSalonDialog(BuildContext context) {
-    final TextEditingController _salonNameController = TextEditingController();
+  Future<void> _fetchBranches() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/view_branches.php'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _branches = data.map((branch) {
+            // Update the image URL to include the full URL path
+            return {
+              'name': branch['name'],
+              'image': 'http://localhost/mobile_apps/appointmentApp/' +
+                  branch['image'],
+            };
+          }).toList();
+          _filteredServices = _branches;
+        });
+      } else {
+        print('Failed to fetch Branches.');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _showAddBranchesDialog(BuildContext context) {
+    final TextEditingController _shopNameController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Platform.isIOS
             ? CupertinoAlertDialog(
-                title: const Text('Add New Branch'),
+                title: const Text('Add New Branches'),
                 content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     CupertinoTextField(
-                      controller: _salonNameController,
-                      placeholder: 'Enter branch name',
+                      controller: _shopNameController,
+                      placeholder: 'Enter Branch name',
                     ),
                     const SizedBox(height: 10),
                     CupertinoButton(
@@ -98,7 +154,6 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                       child: const Text('Select Image'),
                       onPressed: _pickImage,
                     ),
-                    if (_imagePath != null) Text('Image selected: $_imagePath'),
                   ],
                 ),
                 actions: [
@@ -112,20 +167,22 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                   CupertinoDialogAction(
                     child: const Text('Add'),
                     onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
+                      String shopName = _shopNameController.text.trim();
+                      _addBranches(shopName, _image, shopId);
+                      Navigator.of(context).pop();
                     },
                   ),
                 ],
               )
             : AlertDialog(
-                title: const Text('Add New Branch'),
+                title: const Text('Add New Branches'),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _salonNameController,
+                      controller: _shopNameController,
                       decoration: const InputDecoration(
-                        labelText: 'Enter branch name',
+                        labelText: 'Enter Branch name',
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -136,7 +193,6 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                         backgroundColor: const Color.fromARGB(255, 7, 111, 57),
                       ),
                     ),
-                    if (_imagePath != null) Text('Image selected: $_imagePath'),
                   ],
                 ),
                 actions: [
@@ -148,7 +204,8 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _addSalon(_salonNameController.text, _imagePath);
+                      String shopName = _shopNameController.text.trim();
+                      _addBranches(shopName, _image, shopId);
                       Navigator.of(context).pop();
                     },
                     child: const Text('Add'),
@@ -157,38 +214,6 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
               );
       },
     );
-  }
-
-  void _addSalon(String name, String? imagePath) async {
-    if (name.isNotEmpty && imagePath != null) {
-      // Read the image as base64 string
-      String base64Image = base64Encode(await File(imagePath).readAsBytes());
-
-      // Send a POST request to the server
-      final response = await http.post(
-        Uri.parse(
-            'https://localhost/mobile_apps/appointmentApp/add_branches.php'),
-        body: {
-          'name': name,
-          'image': base64Image,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['status'] == 'success') {
-          // Add the salon locally to the list if the server response is successful
-          setState(() {
-            services.add({'name': name, 'image': imagePath});
-            _filteredServices = services;
-          });
-        } else {
-          print('Error: ${responseData['message']}');
-        }
-      } else {
-        print('Server error: ${response.statusCode}');
-      }
-    }
   }
 
   @override
@@ -255,87 +280,81 @@ class _AddSalonBranchesPageState extends State<AddSalonBranchesPage> {
                             padding: const EdgeInsets.all(8.0),
                             color: const Color.fromARGB(255, 7, 111, 57),
                             onPressed: () {
-                              _showAddSalonDialog(context);
+                              _showAddBranchesDialog(context);
                             },
                             child: const Icon(CupertinoIcons.add,
                                 color: Colors.white),
                           )
                         : IconButton(
-                            icon: const Icon(Icons.add, color: Colors.white),
                             onPressed: () {
-                              _showAddSalonDialog(context);
+                              _showAddBranchesDialog(context);
                             },
-                            color: const Color.fromARGB(255, 7, 111, 57),
+                            icon: const Icon(Icons.add, color: Colors.white),
                           ),
                   ],
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 3 / 2,
-                    ),
-                    itemCount: _filteredServices.length,
-                    itemBuilder: (context, index) {
-                      final service = _filteredServices[index];
-                      return Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 3),
-                              borderRadius: BorderRadius.circular(12),
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(10.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                  ),
+                  itemCount: _filteredServices.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        // handle branch click
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          side:
+                              const BorderSide(color: Colors.white, width: 2.0),
+                        ),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: _filteredServices[index]['image'] != null
+                                  ? Image.network(
+                                      _filteredServices[index]['image'],
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                service['image']!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.5),
+                                  borderRadius: const BorderRadius.only(
+                                    bottomLeft: Radius.circular(10.0),
+                                    bottomRight: Radius.circular(10.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  _filteredServices[index]['name'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 20,
-                            child: Platform.isIOS
-                                ? CupertinoButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 22.0),
-                                    color:
-                                        const Color.fromARGB(255, 7, 111, 57),
-                                    onPressed: () {},
-                                    child: Text(
-                                      service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 7, 111, 57),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0, horizontal: 22.0),
-                                    ),
-                                    onPressed: () {},
-                                    child: Text(
-                                      service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

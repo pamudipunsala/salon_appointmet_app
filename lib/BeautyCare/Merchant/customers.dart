@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class CustomerDetailsPage extends StatefulWidget {
-  const CustomerDetailsPage({super.key});
+  final String? userId;
+
+  const CustomerDetailsPage({Key? key, required this.userId, required businessTypeId}) : super(key: key);
 
   @override
   _CustomerDetailsPageState createState() => _CustomerDetailsPageState();
@@ -41,7 +43,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
   Future<void> fetchCustomerData() async {
     try {
       var url = Uri.parse(
-          'http://192.168.8.116/mobile_apps/appointmentApp/fetch_customers.php');
+          'http://localhost/mobile_apps/appointmentApp/fetch_customers.php');
       var response = await http.post(url, body: {'type_id': '1'});
 
       if (response.statusCode == 200) {

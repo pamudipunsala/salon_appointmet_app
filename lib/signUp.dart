@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/type.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:salon_appointment_app/login.dart';
+import 'package:uuid/uuid.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -17,16 +17,50 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  String selectedUserType = "Select a Type";
+  List<dynamic> userTypes = [];
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
+  final TextEditingController shopController = TextEditingController();
+  final TextEditingController userTypeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  // Function to show error dialog
+  @override
+  void initState() {
+    super.initState();
+    fetchUserTypes();
+  }
+
+  Future<void> fetchUserTypes() async {
+    var url = Uri.parse(
+        "http://localhost/mobile_apps/appointmentApp/getUserTypes.php");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is Map<String, dynamic> &&
+            data.containsKey('types') &&
+            data['types'] is List) {
+          setState(() {
+            userTypes = data['types'];
+            selectedUserType =
+                userTypes.isNotEmpty ? userTypes[0]['type'] : "Select a Type";
+          });
+          print('User Types loaded: $userTypes');
+        } else {
+          print('Unexpected JSON structure: $data');
+        }
+      } else {
+        print('Failed to load user types. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
+  }
+
   void _showErrorDialog(BuildContext context, String message) {
     if (Platform.isIOS) {
       showDialog(
@@ -68,57 +102,112 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> signUp() async {
-    var url = Uri.parse(Platform.isAndroid
-        ? 'http://10.0.2.2/mobile_apps/appointmentApp/profile.php'
-        : 'http://localhost/mobile_apps/appointmentApp/profile.php');
+    String name = nameController.text;
+    String shop = shopController.text;
+    String email = emailController.text;
+    String userName = usernameController.text;
+    String password = passwordController.text;
+    String confirmPassword = confirmPasswordController.text;
 
+    if (password != confirmPassword) {
+      _showErrorDialog(context, "Passwords do not match.");
+      return;
+    }
+
+    String? selectedTypeId = userTypes.firstWhere(
+      (type) => type['type'] == selectedUserType,
+      orElse: () => null,
+    )?['id'];
+
+    if (selectedTypeId == null || selectedTypeId.isEmpty) {
+      _showErrorDialog(context, "Please select a valid user type.");
+      return;
+    }
+
+    int typeId = int.tryParse(selectedTypeId) ?? 0;
+    print("Selected UserType: $selectedUserType");
+
+    int shopId = await generateShopId();
+    print("Final ShopId assigned in signUp: $shopId");
+
+    var url =
+        Uri.parse("http://localhost/mobile_apps/appointmentApp/signUp.php");
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name,
+        'shop': shop,
+        'shop_id': shopId,
+        'type_id': typeId,
+        'email': email,
+        'userName': userName,
+        'password': password,
+      }),
+    );
+
+    print("Status Code: ${response.statusCode}");
+    print("Server Response: ${response.body}");
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Sign up successful!')));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    } else {
+      _showErrorDialog(context, 'Failed to sign up. Please try again.');
+    }
+  }
+
+  Future<int> generateShopId() async {
     try {
-      var response = await http.post(url, body: {
-        'name': nameController.text,
-        'phone': phoneNumberController.text,
-        'category': categoryController.text,
-        'email': emailController.text,
-        'username': usernameController.text,
-        'password': passwordController.text,
-        'confirm_password': confirmPasswordController.text,
-      });
+      var url = Uri.parse(
+          "http://192.168.8.116/mobile_apps/appointmentApp/getHighestShopId.php");
+
+      final response = await http.get(url);
+      print("Response for Highest Shop ID: ${response.body}");
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        if (data['status'] == 'success') {
-          Navigator.pushReplacementNamed(context, '/businessTypePage');
-        } else {
-          _showErrorDialog(context, data['message']);
-        }
+        final data = json.decode(response.body);
+        int currentShopId =
+            int.tryParse(data['highest_shop_id'].toString()) ?? 0;
+        int newShopId = currentShopId + 1;
+        print("Generated ShopId: $newShopId");
+        return newShopId;
       } else {
-        _showErrorDialog(context,
-            "Failed to connect to the server. Response: ${response.body}");
-        print("error: ${response.body}");
+        print("Failed to fetch highest shopId. Defaulting to 0.");
+        return 0;
       }
     } catch (e) {
-      _showErrorDialog(context, "Error: $e");
+      print('Error occurred while fetching highest shopId: $e');
+      return 0;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.width < 600;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
               'assets/images/background/bg7.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          // Transparent color overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.4), // Semi-transparent overlay
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Center(
@@ -126,12 +215,11 @@ class _SignUpPageState extends State<SignUpPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.6), // White background for the content box
-                borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                color: Colors.white.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // Soft shadow
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -162,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: 30.0),
 
-                  //Name input field
+                  // Name input field
                   Platform.isIOS
                       ? CupertinoTextField(
                           controller: nameController,
@@ -185,11 +273,37 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                   const SizedBox(height: 16.0),
 
-                  //Phone Number input field
+                  DropdownButton<String>(
+                    value: selectedUserType,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedUserType = newValue!;
+                      });
+                    },
+                    items: [
+                      const DropdownMenuItem<String>(
+                        value: 'Select a Type',
+                        child: Text('Select a user Type'),
+                      ),
+                      ...userTypes.map((dynamic type) {
+                        return DropdownMenuItem<String>(
+                          value: type['type'],
+                          child: Text(type['type']),
+                        );
+                      }).toList(),
+                    ],
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 71, 4, 4),
+                      fontSize: screenWidth * 0.04,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+
+                  // Shop input field
                   Platform.isIOS
                       ? CupertinoTextField(
-                          controller: phoneNumberController,
-                          placeholder: 'Phone Number',
+                          controller: shopController,
+                          placeholder: 'Shop',
                           padding: const EdgeInsets.all(16.0),
                           keyboardType: TextInputType.text,
                           decoration: BoxDecoration(
@@ -199,39 +313,16 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       : TextFormField(
-                          controller: phoneNumberController,
+                          controller: shopController,
                           decoration: const InputDecoration(
-                            labelText: 'Phone Number',
+                            labelText: 'Shop',
                             border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.text,
                         ),
                   const SizedBox(height: 16.0),
 
-                  //Category input field
-                  Platform.isIOS
-                      ? CupertinoTextField(
-                          controller: categoryController,
-                          placeholder: 'Category',
-                          padding: const EdgeInsets.all(16.0),
-                          keyboardType: TextInputType.text,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 23, 92, 14)),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                        )
-                      : TextFormField(
-                          controller: categoryController,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.text,
-                        ),
-                  const SizedBox(height: 16.0),
-
-                  // Username input field
+                  // Email input field
                   Platform.isIOS
                       ? CupertinoTextField(
                           controller: emailController,
@@ -254,7 +345,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                   const SizedBox(height: 16.0),
 
-                  // Username input field
+                  // User Name input field
                   Platform.isIOS
                       ? CupertinoTextField(
                           controller: usernameController,
@@ -408,7 +499,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         : 'Powered by Synnex IT Solutions 2024 (Android)',
                     style: GoogleFonts.archivo(
                       color: const Color.fromRGBO(0, 0, 0, 0.541),
-                      fontSize: isSmallScreen ? 12 : 14,
                     ),
                     textAlign: TextAlign.center,
                   ),
