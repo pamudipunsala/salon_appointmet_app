@@ -8,6 +8,7 @@ import 'package:salon_appointment_app/BeautyCare/Merchant/add_shops.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/appointment_summary.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/approve_appointment.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/customers.dart';
+import 'package:salon_appointment_app/BeautyCare/Merchant/settings.dart';
 import 'package:salon_appointment_app/BeautyCare/Merchant/view_reviews.dart';
 
 class BeauticianDashboardPage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
       'title': 'Add Branches',
       'icon': Icons.store,
       'page': (userId, businessTypeId) =>
-          AddSalonBranchesPage(userId: userId, businessTypeId: businessTypeId)
+          AddBranchesPage(userId: userId, businessTypeId: businessTypeId)
     },
     {
       'title': 'Customers',
@@ -82,6 +83,12 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
       'icon': Icons.reviews,
       'page': (userId, businessTypeId) =>
           ViewReviews(userId: userId, businessTypeId: businessTypeId)
+    },
+    {
+      'title': 'Settings',
+      'icon': Icons.settings,
+      'page': (userId, businessTypeId) =>
+          SettingsPage(userId: userId, businessTypeId: businessTypeId)
     },
   ];
 
@@ -133,10 +140,10 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
             padding: const EdgeInsets.all(26.0),
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, 
+                crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                childAspectRatio: 1, 
+                childAspectRatio: 1,
               ),
               itemCount: dashboardItems.length,
               itemBuilder: (context, index) {

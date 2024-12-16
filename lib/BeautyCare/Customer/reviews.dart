@@ -32,7 +32,7 @@ class _ReviewDetailsState extends State<ReviewDetails> {
     try {
       var response = await http.post(
         Uri.parse(
-            'http://192.168.8.116/mobile_apps/appointmentApp/add_reviews.php'),
+            'http://localhost/mobile_apps/appointmentApp/add_reviews.php'),
         headers: {
           'Content-Type': 'application/json',
         },

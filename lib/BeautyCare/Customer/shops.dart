@@ -1,88 +1,72 @@
-import 'dart:io' show Platform;
+import 'dart:convert';
+import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:salon_appointment_app/BeautyCare/Customer/branches.dart';
+import 'package:http/http.dart' as http;
+import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
 
 class ShopsPage extends StatefulWidget {
-  const ShopsPage({super.key});
+  final String? userId;
+  final String? businessTypeId;
+
+  const ShopsPage({Key? key, this.userId, this.businessTypeId})
+      : super(key: key);
 
   @override
   _ShopsPageState createState() => _ShopsPageState();
 }
 
 class _ShopsPageState extends State<ShopsPage> {
-  final List<Map<String, dynamic>> services = [
-    {'name': 'Shop CB', 'image': 'assets/images/img10.jpeg'},
-    {'name': 'Shop Neesha Manahari', 'image': 'assets/images/img11.jpeg'},
-    {'name': 'Brides by Udara Malshan', 'image': 'assets/images/img12.jpeg'},
-    {'name': 'Shop Boneetha', 'image': 'assets/images/img13.jpeg'},
-    {'name': 'The Blushing Nor', 'image': 'assets/images/img14.jpeg'},
-  ];
-
+  List<Map<String, dynamic>> _services = [];
   List<Map<String, dynamic>> _filteredServices = [];
   final TextEditingController _searchController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
-  String? _imagePath;
+  File? _image;
 
   @override
   void initState() {
     super.initState();
-    _filteredServices = services;
+    _fetchShops();
     _searchController.addListener(_filterServices);
+  }
+
+  Future<void> _fetchShops() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/customer_view_shops.php'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _services = data.map((shop) {
+            return {
+              'name': shop['name'],
+              'image': shop['image'],
+            };
+          }).toList();
+          _filteredServices = _services;
+        });
+      } else {
+        print('Failed to fetch shops.');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   void _filterServices() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        _filteredServices = services;
+        _filteredServices = _services;
       } else {
-        _filteredServices = services
+        _filteredServices = _services
             .where((service) => service['name']!.toLowerCase().contains(query))
             .toList();
       }
     });
-  }
-
-  Future<void> _pickImage() async {
-    PermissionStatus permissionStatus;
-
-    if (Platform.isAndroid) {
-      permissionStatus = await Permission.storage.request();
-    } else if (Platform.isIOS) {
-      permissionStatus = await Permission.photos.request();
-    } else {
-      return;
-    }
-
-    if (permissionStatus.isGranted) {
-      // If permission granted, pick the image
-      final XFile? image =
-          await _imagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _imagePath = image.path;
-        });
-      }
-    } else {
-      print('Permission denied to access the gallery.');
-      // Optionally show a message or redirect to app settings
-      if (await Permission.storage.isPermanentlyDenied ||
-          await Permission.photos.isPermanentlyDenied) {
-        openAppSettings();
-      }
-    }
-  }
-
-  void _addShop(String name, String? imagePath) {
-    if (name.isNotEmpty && imagePath != null) {
-      setState(() {
-        services.add({'name': name, 'image': imagePath});
-        _filteredServices = services;
-      });
-    }
   }
 
   @override
@@ -109,7 +93,7 @@ class _ShopsPageState extends State<ShopsPage> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/bg6.jpg',
+              'assets/images/background/bg8.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -128,7 +112,7 @@ class _ShopsPageState extends State<ShopsPage> {
                       child: Platform.isIOS
                           ? CupertinoSearchTextField(
                               controller: _searchController,
-                              placeholder: 'Search branches...',
+                              placeholder: 'Search shops...',
                               backgroundColor:
                                   const Color.fromRGBO(255, 255, 255, 0.541),
                             )
@@ -136,7 +120,7 @@ class _ShopsPageState extends State<ShopsPage> {
                               controller: _searchController,
                               decoration: const InputDecoration(
                                 prefixIcon: Icon(Icons.search),
-                                hintText: 'Search branches...',
+                                hintText: 'Search shops...',
                                 border: OutlineInputBorder(),
                                 fillColor: Color.fromRGBO(255, 255, 255, 0.541),
                               ),
@@ -147,84 +131,36 @@ class _ShopsPageState extends State<ShopsPage> {
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 3 / 2,
-                    ),
-                    itemCount: _filteredServices.length,
-                    itemBuilder: (context, index) {
-                      final service = _filteredServices[index];
-                      return Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 3),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                service['image']!,
+                child: _filteredServices.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: _filteredServices.length,
+                        itemBuilder: (context, index) {
+                          final service = _filteredServices[index];
+                          return Card(
+                            margin: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(8.0),
+                              title: Text(service['name']),
+                              leading: Image.network(
+                                'http://localhost/mobile_apps/appointmentApp/${service['image']}',
+                                width: 50,
+                                height: 50,
                                 fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
                               ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 20,
-                            child: Platform.isIOS
-                                ? CupertinoButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 22.0),
-                                    color:
-                                        const Color.fromARGB(255, 7, 111, 57),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const BranchesPage()));
-                                    },
-                                    child: Text(
-                                      service['name']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 7, 111, 57),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0, horizontal: 22.0),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const BranchesPage()));
-                                    },
-                                    child: Text(
-                                      service['name']!,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ServicesPage(shopId: ''),
                                   ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      )
+                    : const Center(child: Text('No shops found')),
               ),
             ],
           ),

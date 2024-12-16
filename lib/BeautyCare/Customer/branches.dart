@@ -157,7 +157,7 @@ class _BranchesPageState extends State<BranchesPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const ServicesPage()));
+                                                  const ServicesPage(shopId: '')));
                                     },
                                     child: Text(
                                       service['name']!,
@@ -176,7 +176,7 @@ class _BranchesPageState extends State<BranchesPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const ServicesPage()));
+                                                  const ServicesPage(shopId: '',)));
                                     },
                                     child: Text(
                                       service['name']!,

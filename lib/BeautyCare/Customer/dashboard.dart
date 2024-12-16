@@ -8,7 +8,8 @@ import 'package:salon_appointment_app/BeautyCare/Customer/shops.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
 
 class CustomerDashboardPage extends StatefulWidget {
-  const CustomerDashboardPage({super.key, required userId, required businessTypeId});
+  const CustomerDashboardPage(
+      {super.key, required userId, required businessTypeId});
 
   @override
   _CustomerDashboardPageState createState() => _CustomerDashboardPageState();

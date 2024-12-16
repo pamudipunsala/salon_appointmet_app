@@ -1,57 +1,81 @@
-import 'dart:io' show Platform;
+import 'dart:convert';
+import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class OffersPage extends StatefulWidget {
-  const OffersPage({super.key});
+  const OffersPage({Key? key}) : super(key: key);
 
   @override
   _OffersPageState createState() => _OffersPageState();
 }
 
 class _OffersPageState extends State<OffersPage> {
-  List<Map<String, dynamic>> _filteredProducts = [];
+  List<Map<String, dynamic>> _offers = [];
+  List<Map<String, dynamic>> _filteredOffers = [];
   final TextEditingController _searchController = TextEditingController();
-
-  // List of products and image paths for demonstration
-  final products = [
-    {'name': 'Product 1', 'image': 'assets/images/img26.png'},
-    {'name': 'Product 2', 'image': 'assets/images/img27.png'},
-    {'name': 'Product 3', 'image': 'assets/images/img28.png'},
-    {'name': 'Product 4', 'image': 'assets/images/img29.jpeg'},
-    {'name': 'Product 5', 'image': 'assets/images/img30.png'},
-    {'name': 'Product 6', 'image': 'assets/images/img26.png'},
-    {'name': 'Product 7', 'image': 'assets/images/img27.png'},
-    {'name': 'Product 8', 'image': 'assets/images/img28.png'},
-    {'name': 'Product 9', 'image': 'assets/images/img29.jpeg'},
-    {'name': 'Product 10', 'image': 'assets/images/img30.png'},
-  ];
-
-  void _filterProducts() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredProducts = products;
-      } else {
-        _filteredProducts = products
-            .where((product) => product['name']!.toLowerCase().contains(query))
-            .toList();
-      }
-    });
-  }
+  final ImagePicker _imagePicker = ImagePicker();
+  String? _imagePath;
 
   @override
   void initState() {
     super.initState();
-    _filteredProducts = products;
-    _searchController.addListener(_filterProducts);
+    _fetchOffers();
+    _searchController.addListener(_filterOffers);
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_filterProducts);
+    _searchController.removeListener(_filterOffers);
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchOffers() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost/mobile_apps/appointmentApp/view_offers.php'));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['success']) {
+          final List<dynamic> offers = jsonResponse['offers'];
+          setState(() {
+            _offers = offers.map((offer) {
+              return {
+                'image': offer['image'], // Only 'image' available
+                'shop_id':
+                    offer['shop_id'], // You might want to display 'shop_id'
+              };
+            }).toList();
+            _filteredOffers = _offers;
+          });
+        } else {
+          print('No offers found: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Failed to fetch offers.');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _filterOffers() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredOffers = _offers;
+      } else {
+        _filteredOffers = _offers
+            .where((offer) => offer['name']!.toLowerCase().contains(query))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -62,29 +86,25 @@ class _OffersPageState extends State<OffersPage> {
               middle:
                   const Text('Offers', style: TextStyle(color: Colors.white)),
               backgroundColor: const Color.fromARGB(255, 7, 111, 57),
-              leading: Builder(builder: (BuildContext context) {
-                return CupertinoNavigationBarBackButton(
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                );
-              }))
+              leading: CupertinoNavigationBarBackButton(
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ))
           : AppBar(
               title: const Text(
                 'Offers',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: const Color.fromARGB(255, 7, 111, 57),
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-              ),
+              iconTheme: const IconThemeData(color: Colors.white),
             ),
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/bg7.jpg',
+              'assets/images/background/bg8.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -93,106 +113,85 @@ class _OffersPageState extends State<OffersPage> {
               color: Colors.black.withOpacity(0.4),
             ),
           ),
-          Column(children: [
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Platform.isIOS
-                  ? CupertinoSearchTextField(
-                      controller: _searchController,
-                      placeholder: 'Search products...',
-                      backgroundColor:
-                          const Color.fromRGBO(255, 255, 255, 0.541),
-                    )
-                  : TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: 'Search products...',
-                        border: OutlineInputBorder(),
-                        fillColor: Color.fromRGBO(255, 255, 255, 0.541),
-                      ),
-                    ),
-            ),
-            Expanded(
-              child: Padding(
+          Column(
+            children: [
+              // Search bar
+              Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // 2 items per row
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 3 / 2, // Adjust to fit the images
-                  ),
-                  itemCount: _filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = _filteredProducts[index];
-                    return Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white, width: 3),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(
-                              product['image']!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Platform.isIOS
+                          ? CupertinoSearchTextField(
+                              controller: _searchController,
+                              placeholder: 'Search offers...',
+                              backgroundColor:
+                                  const Color.fromRGBO(255, 255, 255, 0.541),
+                            )
+                          : TextField(
+                              controller: _searchController,
+                              decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.search),
+                                hintText: 'Search offers...',
+                                border: OutlineInputBorder(),
+                                fillColor: Color.fromRGBO(255, 255, 255, 0.541),
+                              ),
                             ),
-                          ),
-                        ),
-                        // Button with product name
-                        // Positioned(
-                        //   bottom: 20,
-                        //   child: Platform.isIOS
-                        //       ? Container(
-                        //           decoration: BoxDecoration(
-                        //             border: Border.all(
-                        //                 color: Colors.white, width: 2),
-                        //             borderRadius: BorderRadius.circular(12),
-                        //           ),
-                        //           child: CupertinoButton(
-                        //             padding: const EdgeInsets.symmetric(
-                        //                 vertical: 8.0, horizontal: 22.0),
-                        //             child: Text(
-                        //               'Apply Now',
-                        //               style: const TextStyle(fontSize: 16.0),
-                        //             ),
-                        //             color:
-                        //                 const Color.fromARGB(255, 7, 111, 57),
-                        //             onPressed: () {},
-                        //           ),
-                        //         )
-                        //       : ElevatedButton(
-                        //           style: ElevatedButton.styleFrom(
-                        //             backgroundColor:
-                        //                 const Color.fromARGB(255, 7, 111, 57),
-                        //             side: const BorderSide(
-                        //                 color: Colors.white, width: 2),
-                        //           ),
-                        //           onPressed: () {
-                        //             // Handle product button press
-                        //           },
-                        //           child: Text(
-                        //             'Apply Now',
-                        //             style: const TextStyle(
-                        //               color: Colors.white,
-                        //               fontSize: 16,
-                        //             ),
-                        //           ),
-                        //         ),
-                        // ),
-                      ],
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 10),
+                  ],
                 ),
               ),
-            )
-          ])
+              // Offers Grid
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 3 / 2,
+                    ),
+                    itemCount: _filteredOffers.length,
+                    itemBuilder: (context, index) {
+                      final offer = _filteredOffers[index];
+                      return Card(
+                        clipBehavior: Clip
+                            .antiAlias, // This ensures the image is clipped to the card
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Image.network(
+                                'http://localhost/mobile_apps/appointmentApp/${offer['image']}',
+                                fit: BoxFit
+                                    .cover, // Ensures the image covers the card entirely
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 8.0,
+                              left: 8.0,
+                              child: Container(
+                                color: Colors.black.withOpacity(0.6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 4.0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
         ],
       ),
     );

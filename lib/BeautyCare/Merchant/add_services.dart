@@ -36,7 +36,6 @@ class _AddServicesPageState extends State<AddServicesPage> {
     _startPolling(); // Start polling for updates
   }
 
-  // Start polling the server every 10 seconds
   void _startPolling() {
     _fetchServices(); // Initial fetch
     _timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
@@ -83,130 +82,101 @@ class _AddServicesPageState extends State<AddServicesPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Service'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _serviceNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Service name',
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Add New Service'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: TextField(
-                      controller: _timeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Enter Time',
-                      ),
-                      keyboardType: TextInputType.number,
+                  TextField(
+                    controller: _serviceNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Service name',
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      flex: 2,
-                      child: DropdownButton<String>(
-                        value: timeUnit,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            timeUnit = newValue!;
-                          });
-                        },
-                        items: const [
-                          DropdownMenuItem(
-                            value: "hours",
-                            child: Text("Hours"),
-                          ),
-                          DropdownMenuItem(
-                            value: "minutes",
-                            child: Text("Minutes"),
-                          ),
-                          DropdownMenuItem(
-                            value: "seconds",
-                            child: Text("Seconds"),
-                          ),
-                        ],
-                      )),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _timeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Time (in hours, e.g., 1.5)',
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _priceController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Price',
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
                 ],
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _priceController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Price',
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
                 ),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final serviceName = _serviceNameController.text;
-                final time = _formatTime(
-                  int.tryParse(_timeController.text) ?? 0,
-                  timeUnit,
-                );
-                final price = _priceController.text;
+                TextButton(
+                  onPressed: () {
+                    final serviceName = _serviceNameController.text;
+                    final double enteredTime =
+                        double.tryParse(_timeController.text) ?? 0.0;
+                    final time = _formatTime(enteredTime);
+                    final price = _priceController.text;
 
-                _addService(serviceName, time, price);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Add'),
-            ),
-          ],
+                    _addService(
+                      serviceName,
+                      time,
+                      price,
+                      widget.userId,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
-  String _formatTime(int value, String unit) {
-    if (value <= 0) {
-      return '00:00:00'; 
-    }
-
-    switch (unit) {
-      case "hours":
-        return '${value.toString().padLeft(2, '0')}:00:00';
-      case "minutes":
-        return '00:${value.toString().padLeft(2, '0')}:00';
-      case "seconds":
-        return '00:00:${value.toString().padLeft(2, '0')}';
-      default:
-        return '00:00:00';
-    }
+  String _formatTime(double value) {
+    // Convert decimal hours to hours and minutes
+    int hours = value.floor();
+    int minutes = ((value - hours) * 60).round();
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:00';
   }
 
-  Future<void> _addService(String name, String time, String price) async {
+  Future<void> _addService(
+      String name, String time, String price, String? userId) async {
+    if (userId == null || userId.isEmpty) {
+      print('Error: userId is null or empty');
+      return;
+    }
+
     var url = Uri.parse(
         "http://localhost/mobile_apps/appointmentApp/add_services.php");
 
     var request = http.MultipartRequest('POST', url);
 
-    // Add text fields
     request.fields['name'] = name;
     request.fields['time'] = time;
     request.fields['price'] = price;
-    request.fields['shop_id'] = '';
-    request.fields['category_id'] = '1';
+    request.fields['user_id'] = userId;
 
     try {
       var response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      print('Server Response: $responseBody');
 
       if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        print('Response: $responseBody'); // Log the response for debugging
         _fetchServices();
       } else {
         print('Failed to add service: ${response.reasonPhrase}');
@@ -219,15 +189,13 @@ class _AddServicesPageState extends State<AddServicesPage> {
   Future<void> _fetchServices() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://localhost/mobile_apps/appointmentApp/view_services.php'));
+          'http://localhost/mobile_apps/appointmentApp/view_services.php?user_id=${widget.userId}'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         setState(() {
-          _services = data.map((shop) {
-            return {
-              'name': shop['name'],
-            };
+          _services = data.map((service) {
+            return {'name': service['name'], 'time': service['time']};
           }).toList();
           _filteredServices = _services;
         });
@@ -329,6 +297,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                             child: ListTile(
                               contentPadding: const EdgeInsets.all(8.0),
                               title: Text(service['name']),
+                              subtitle: Text('Time: ${service['time']}'),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
@@ -339,7 +308,7 @@ class _AddServicesPageState extends State<AddServicesPage> {
                           );
                         },
                       )
-                    : const Center(child: Text('No shops found')),
+                    : const Center(child: Text('No services found')),
               ),
             ],
           ),

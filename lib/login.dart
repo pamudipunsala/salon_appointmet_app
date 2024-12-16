@@ -238,14 +238,14 @@ class _LoginPageState extends State<LoginPage> {
                   Platform.isIOS
                       ? CupertinoButton(
                           onPressed: () {
-                            _login(); // Call the existing _login function.
+                            _login(); 
                           },
                           child: const Text('Login'),
                           color: Color.fromARGB(255, 23, 92, 14),
                         )
                       : ElevatedButton(
                           onPressed: () {
-                            _login(); // Call the existing _login function.
+                            _login(); 
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 23, 92, 14),
