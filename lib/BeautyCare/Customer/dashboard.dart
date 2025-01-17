@@ -8,30 +8,49 @@ import 'package:salon_appointment_app/BeautyCare/Customer/shops.dart';
 import 'package:salon_appointment_app/BeautyCare/Customer/reviews.dart';
 
 class CustomerDashboardPage extends StatefulWidget {
+  final String userId;
   const CustomerDashboardPage(
-      {super.key, required userId, required businessTypeId});
+      {super.key, required this.userId, required businessTypeId});
 
   @override
   _CustomerDashboardPageState createState() => _CustomerDashboardPageState();
 }
 
 class _CustomerDashboardPageState extends State<CustomerDashboardPage> {
-  // List of dashboard items with text and icons
-  final List<Map<String, dynamic>> dashboardItems = [
-    {
-      'title': 'Book an Appointment',
-      'icon': Icons.book,
-      'page': MainAppointmentPage()
-    },
-    {'title': 'Shops', 'icon': Icons.store, 'page': ShopsPage()},
-    {'title': 'Offers', 'icon': Icons.local_offer, 'page': OffersPage()},
-    {
-      'title': 'Comments & Review',
-      'icon': Icons.reviews,
-      'page': ReviewDetails()
-    },
-    {'title': 'History', 'icon': Icons.history, 'page': CustomerHistory()},
-  ];
+  late List<Map<String, dynamic>> dashboardItems;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dashboardItems = [
+      {
+        'title': 'Book an Appointment',
+        'icon': Icons.book,
+        'page': MainAppointmentPage(),
+      },
+      {
+        'title': 'Shops',
+        'icon': Icons.store,
+        'page': ShopsPage(userId: widget.userId),
+      },
+      {
+        'title': 'Offers',
+        'icon': Icons.local_offer,
+        'page': OffersPage(),
+      },
+      {
+        'title': 'Comments & Review',
+        'icon': Icons.reviews,
+        'page': ReviewDetails(),
+      },
+      {
+        'title': 'History',
+        'icon': Icons.history,
+        'page': CustomerHistory(),
+      },
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

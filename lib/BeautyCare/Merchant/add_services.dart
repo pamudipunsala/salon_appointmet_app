@@ -1,13 +1,10 @@
-import 'dart:async'; // For Timer
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:path/path.dart'; // For getting file name
-import 'package:mime/mime.dart'; // For detecting mime type
-import 'package:http_parser/http_parser.dart'; // For sending the file with multipart
 
 class AddServicesPage extends StatefulWidget {
   final String? userId;

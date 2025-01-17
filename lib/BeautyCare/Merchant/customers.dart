@@ -35,7 +35,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState();   
     fetchCustomerData();
     _searchController.addListener(_filterCustomers);
   }

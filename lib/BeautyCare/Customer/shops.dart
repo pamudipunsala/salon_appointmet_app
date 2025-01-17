@@ -3,9 +3,8 @@ import 'dart:io' show File, Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
-import 'package:salon_appointment_app/BeautyCare/Customer/services.dart';
+import 'package:salon_appointment_app/BeautyCare/Customer/branches.dart';
 
 class ShopsPage extends StatefulWidget {
   final String? userId;
@@ -42,6 +41,7 @@ class _ShopsPageState extends State<ShopsPage> {
         setState(() {
           _services = data.map((shop) {
             return {
+              'id': shop['id'],
               'name': shop['name'],
               'image': shop['image'],
             };
@@ -152,7 +152,7 @@ class _ShopsPageState extends State<ShopsPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        ServicesPage(shopId: ''),
+                                        BranchesPage(shopId: service['id'], userId: widget.userId,),
                                   ),
                                 );
                               },

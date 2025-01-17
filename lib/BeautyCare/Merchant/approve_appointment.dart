@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ApproveAppointmentScreen extends StatefulWidget {
   final String? userId;
 
-  const ApproveAppointmentScreen({Key? key, required this.userId, required businessTypeId}) : super(key: key);
+  const ApproveAppointmentScreen(
+      {Key? key, required this.userId, required businessTypeId})
+      : super(key: key);
 
   @override
   _ApproveAppointmentScreenState createState() =>
@@ -15,73 +19,119 @@ class ApproveAppointmentScreen extends StatefulWidget {
 class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-  final List<Map<String, String>> appointments = [
-    {
-      'name': 'John Doe',
-      'date': '2024-09-15',
-      'time': '10:00 AM',
-      'location': 'Office A',
-      'status': 'Pending',
-    },
-    {
-      'name': 'Jane Smith',
-      'date': '2024-09-16',
-      'time': '11:30 AM',
-      'location': 'Office B',
-      'status': 'Hold',
-    },
-    {
-      'name': 'Alex Johnson',
-      'date': '2024-09-17',
-      'time': '01:00 PM',
-      'location': 'Office C',
-      'status': 'Pending',
-    },
-  ];
+  List<Map<String, dynamic>> appointments = [];
 
-  // Approve appointment function
+  // Fetch appointments from the database
+  Future<void> _fetchAppointments() async {
+    final url = Uri.parse(
+        'http://localhost/mobile_apps/appointmentApp/fetch_appointments.php');
+    final response = await http.post(
+      url,
+      body: {'user_id': widget.userId},
+    );
+
+    if (response.statusCode == 200) {
+      print('Response data: ${response.body}'); // Log response for debugging
+      setState(() {
+        appointments =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+      });
+    } else {
+      print('Failed to fetch appointments: ${response.statusCode}');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAppointments();
+  }
+
+  Future<bool> _updateAppointment({
+    required String id,
+    required String status,
+    required String time,
+  }) async {
+    final url = Uri.parse(
+        'http://localhost/mobile_apps/appointmentApp/update_appointment.php');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'id': id,
+          'status': status,
+          'time': time,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          print('Update successful: ${data['message']}');
+          return true;
+        } else {
+          print('Failed to update appointment: ${data['message']}');
+        }
+      } else {
+        print('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return false;
+  }
+
+// Approve appointment function
   void _approveAppointment(int index) {
     setState(() {
       appointments[index]['status'] = 'Approved';
     });
+    _updateAppointment(
+      id: appointments[index]['id'].toString(),
+      status: 'Approved',
+      time: appointments[index]['time'] ?? 'N/A',
+    );
     print("Appointment approved: ${appointments[index]['name']}");
   }
 
-  // Hold appointment function
+// Hold appointment function
   void _holdAppointment(int index) {
     setState(() {
       appointments[index]['status'] = 'Hold';
     });
+    _updateAppointment(
+      id: appointments[index]['id'].toString(),
+      status: 'Hold',
+      time: appointments[index]['time'] ?? 'N/A',
+    );
     print("Appointment on hold: ${appointments[index]['name']}");
   }
 
-  // Cancel appointment function
-  void _cancelAppointment(int index) {
-    setState(() {
-      appointments[index]['status'] = 'Cancelled';
-    });
-    print("Appointment cancelled: ${appointments[index]['name']}");
-  }
-
+// Adjust time function
   Future<void> _adjustTime(int index) async {
     if (Platform.isAndroid) {
       final TimeOfDay? picked = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
       );
-      if (picked != null && picked != selectedTime) {
+      if (picked != null) {
         setState(() {
           selectedTime = picked;
-          // Save the adjusted time back into the appointment
           appointments[index]['time'] = picked.format(context);
         });
+        _updateAppointment(
+          id: appointments[index]['id'].toString(),
+          status: appointments[index]['status'] ?? 'Pending',
+          time: picked.format(context),
+        );
       }
     } else if (Platform.isIOS) {
       showModalBottomSheet(
         context: context,
         builder: (BuildContext builder) {
           return Container(
-            height: MediaQuery.of(context).copyWith().size.height / 3,
+            height: MediaQuery.of(context).size.height / 3,
             child: CupertinoDatePicker(
               mode: CupertinoDatePickerMode.time,
               initialDateTime: DateTime.now(),
@@ -91,9 +141,13 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
                     hour: newDateTime.hour,
                     minute: newDateTime.minute,
                   );
-                  // Save the adjusted time back into the appointment
                   appointments[index]['time'] = selectedTime!.format(context);
                 });
+                _updateAppointment(
+                  id: appointments[index]['id'].toString(),
+                  status: appointments[index]['status'] ?? 'Pending',
+                  time: selectedTime!.format(context),
+                );
               },
             ),
           );
@@ -125,163 +179,98 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
             ),
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/bg6.jpg', // Replace with your image path
+              'assets/images/background/bg6.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          // Semi-transparent overlay for readability
           Positioned.fill(
             child: Container(
               color: Colors.black.withOpacity(0.4),
             ),
           ),
-          ListView.builder(
-            itemCount: appointments.length,
-            itemBuilder: (context, index) {
-              final appointment = appointments[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                color: Colors.white
-                    .withOpacity(0.8), // Slight transparency for the card
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            appointment['status'] == 'Approved'
-                                ? Icons.check_circle
-                                : appointment['status'] == 'Hold'
-                                    ? Icons.pause_circle
-                                    : appointment['status'] == 'Cancelled'
-                                        ? Icons.cancel
-                                        : Icons.hourglass_bottom,
-                            color: appointment['status'] == 'Approved'
-                                ? const Color.fromARGB(255, 46, 130, 48)
-                                : appointment['status'] == 'Hold'
-                                    ? Colors.orange
-                                    : appointment['status'] == 'Cancelled'
-                                        ? Colors.red
-                                        : Colors.black,
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(appointment['name']!),
-                              const SizedBox(height: 5),
-                              Text('Date: ${appointment['date']}'),
-                              Text('Time: ${appointment['time']}'),
-                              Text('Location: ${appointment['location']}'),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      if (appointment['status'] == 'Pending' ||
-                          appointment['status'] == 'Hold') ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+          appointments.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: appointments.length,
+                  itemBuilder: (context, index) {
+                    final appointment = appointments[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      color: Colors.white.withOpacity(0.8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Platform.isIOS
-                                ? CupertinoButton(
-                                    color: Colors.blue,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 10),
+                            Row(
+                              children: [
+                                Icon(
+                                  appointment['status'] == 'Approved'
+                                      ? Icons.check_circle
+                                      : appointment['status'] == 'Hold'
+                                          ? Icons.pause_circle
+                                          : appointment['status'] == 'Cancelled'
+                                              ? Icons.cancel
+                                              : Icons.hourglass_bottom,
+                                  color: appointment['status'] == 'Approved'
+                                      ? const Color.fromARGB(255, 46, 130, 48)
+                                      : appointment['status'] == 'Hold'
+                                          ? Colors.orange
+                                          : appointment['status'] == 'Cancelled'
+                                              ? Colors.red
+                                              : Colors.black,
+                                ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(appointment['user_id'] ?? 'No Name'),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                        'Date: ${appointment['date'] ?? 'N/A'}'),
+                                    Text(
+                                        'Time: ${appointment['time'] ?? 'N/A'}'),
+                                    Text(
+                                        'Location: ${appointment['branch_id'] ?? 'N/A'}'),
+                                    Text(
+                                        'Service: ${appointment['service_id'] ?? 'N/A'}'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            if (appointment['status'] == 'Pending' ||
+                                appointment['status'] == 'Hold') ...[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
                                     onPressed: () => _adjustTime(index),
                                     child: const Text('Adjust Time'),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () => _adjustTime(index),
-                                    child: const Text('Adjust Time'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 10),
-                                    ),
                                   ),
-                            const SizedBox(width: 10),
-                            Platform.isIOS
-                                ? CupertinoButton(
-                                    color:
-                                        const Color.fromARGB(255, 46, 130, 48),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 10),
+                                  const SizedBox(width: 6),
+                                  ElevatedButton(
                                     onPressed: () => _approveAppointment(index),
                                     child: const Text('Approve'),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () => _approveAppointment(index),
-                                    child: const Text('Approve'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 46, 130, 48),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 10),
-                                    ),
                                   ),
-                            const SizedBox(width: 10),
-                            if (appointment['status'] == 'Pending')
-                              Platform.isIOS
-                                  ? CupertinoButton(
-                                      color: Colors.orange,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 10),
-                                      onPressed: () => _holdAppointment(index),
-                                      child: const Text('Hold'),
-                                    )
-                                  : ElevatedButton(
-                                      onPressed: () => _holdAppointment(index),
-                                      child: const Text('Hold'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.orange,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 10),
-                                      ),
-                                    ),
-                            const SizedBox(width: 10),
-                            Platform.isIOS
-                                ? CupertinoButton(
-                                    color: Colors.red,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 10),
-                                    onPressed: () => _cancelAppointment(index),
-                                    child: const Text('Cancel'),
-                                  )
-                                : ElevatedButton(
-                                    onPressed: () => _cancelAppointment(index),
-                                    child: const Text('Cancel'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 10),
-                                    ),
+                                  const SizedBox(width: 6),
+                                  ElevatedButton(
+                                    onPressed: () => _holdAppointment(index),
+                                    child: const Text('Hold'),
                                   ),
+                                  const SizedBox(width: 6),
+                                ],
+                              ),
+                            ]
                           ],
                         ),
-                      ] else ...[
-                        Text(
-                          appointment['status']!,
-                          style: TextStyle(
-                            color: appointment['status'] == 'Approved'
-                                ? const Color.fromARGB(255, 46, 130, 48)
-                                : appointment['status'] == 'Hold'
-                                    ? Colors.orange
-                                    : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+                      ),
+                    );
+                  },
+                )
         ],
       ),
     );

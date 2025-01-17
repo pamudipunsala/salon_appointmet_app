@@ -1,9 +1,21 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AppointmentPage extends StatefulWidget {
-  const AppointmentPage({super.key});
+  final int shopId;
+  final int branchId;
+  final int serviceId;
+  final String? userId;
+
+  const AppointmentPage({
+    super.key,
+    required this.branchId,
+    required this.shopId,
+    required this.serviceId,
+    this.userId,
+  });
 
   @override
   _AppointmentPageState createState() => _AppointmentPageState();
@@ -18,7 +30,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   final TextEditingController _dateController = TextEditingController();
 
-  // Function to pick a date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime initialDate = DateTime.now();
     final DateTime firstDate = DateTime(2000);
@@ -93,6 +104,54 @@ class _AppointmentPageState extends State<AppointmentPage> {
             ),
           );
         },
+      );
+    }
+  }
+
+  Future<void> _bookAppointment() async {
+    if (selectedDate == null || selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select both date and time.')),
+      );
+      return;
+    }
+
+    // Format the date and time
+    String formattedDate =
+        "${selectedDate!.year}-${selectedDate!.month}-${selectedDate!.day}";
+    String formattedTime = "${selectedTime!.hour}:${selectedTime!.minute}:00";
+
+    // Prepare the data to send
+    Map<String, String> appointmentData = {
+      'shop_id': widget.shopId.toString(),
+      'branch_id': widget.branchId.toString(),
+      'service_id': widget.serviceId.toString(),
+      'user_id': widget.userId ?? '',
+      'status': 'Pending',
+      'date': formattedDate,
+      'time': formattedTime,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'http://localhost/mobile_apps/appointmentApp/add_appointment.php'),
+        body: appointmentData,
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Appointment booked successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to book appointment.')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error occurred: $e')),
       );
     }
   }
@@ -173,7 +232,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 8.0, horizontal: 22.0),
                                 color: const Color.fromARGB(255, 7, 111, 57),
-                                onPressed: () {},
+                                onPressed: () {
+                                  _bookAppointment();
+                                },
                                 child: const Text(
                                   "Book Appointment",
                                   style: TextStyle(fontSize: 16.0),
@@ -186,7 +247,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   side: const BorderSide(
                                       color: Colors.white, width: 2),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  _bookAppointment();
+                                },
                                 child: const Text("Book Appointment"),
                               ),
                         SizedBox(height: 20),

@@ -1,19 +1,19 @@
-import 'dart:async'; // For Timer
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:path/path.dart'; // For getting file name
-import 'package:mime/mime.dart'; // For detecting mime type
-import 'package:http_parser/http_parser.dart'; // For sending the file with multipart
+
+import 'package:salon_appointment_app/BeautyCare/Customer/appointment.dart';
 
 class ServicesPage extends StatefulWidget {
-  final String? shopId;
+  final int shopId;
+  final int branchId;
+  final String? userId;
 
   const ServicesPage(
-      {Key? key, required this.shopId})
+      {Key? key, required this.shopId, required this.branchId, this.userId})
       : super(key: key);
 
   @override
@@ -24,27 +24,16 @@ class _ServicesPageState extends State<ServicesPage> {
   List<Map<String, dynamic>> _services = [];
   List<Map<String, dynamic>> _filteredServices = [];
   final TextEditingController _searchController = TextEditingController();
-  final ImagePicker _imagePicker = ImagePicker();
-  String? _imagePath;
-  Timer? _timer; // Timer for polling
 
   @override
   void initState() {
     super.initState();
+    _fetchServices();
     _searchController.addListener(_filterServices);
-    _startPolling(); // Start polling for updates
-  }
-
-  void _startPolling() {
-    _fetchServices(); // Initial fetch
-    _timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
-      _fetchServices();
-    });
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
     _searchController.dispose();
     super.dispose();
   }
@@ -64,13 +53,17 @@ class _ServicesPageState extends State<ServicesPage> {
   Future<void> _fetchServices() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://localhost/mobile_apps/appointmentApp/view_services.php?user_id=${widget.shopId}'));
+          'http://localhost/mobile_apps/appointmentApp/customer_view_services.php?branch_id=${widget.branchId}'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         setState(() {
           _services = data.map((service) {
-            return {'name': service['name'], 'time': service['time']};
+            return {
+              'id': service['id'], // Add service ID here
+              'name': service['name'],
+              'time': service['time']
+            };
           }).toList();
           _filteredServices = _services;
         });
@@ -156,12 +149,19 @@ class _ServicesPageState extends State<ServicesPage> {
                               contentPadding: const EdgeInsets.all(8.0),
                               title: Text(service['name']),
                               subtitle: Text('Time: ${service['time']}'),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  // delete functionality
-                                },
-                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AppointmentPage(
+                                      shopId: widget.shopId,
+                                      branchId: widget.branchId,
+                                      serviceId: service['id'],
+                                      userId: widget.userId, 
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },

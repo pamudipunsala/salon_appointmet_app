@@ -166,7 +166,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  AppointmentPage()));
+                                                  AppointmentPage(
+                                                    shopId: 0,
+                                                    branchId: 0,
+                                                    serviceId: service['id'],
+                                                  )));
                                     },
                                     child: Text(
                                       service['name']!,
@@ -185,7 +189,11 @@ class _CategoryPageState extends State<CategoryPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  AppointmentPage()));
+                                                  const AppointmentPage(
+                                                    branchId: 0,
+                                                    shopId: 0,
+                                                    serviceId: 0,
+                                                  )));
                                     },
                                     child: Text(
                                       service['name']!,
