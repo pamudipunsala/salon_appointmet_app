@@ -10,7 +10,8 @@ class SettingsPage extends StatefulWidget {
   final String? userId;
   final String? businessTypeId;
 
-  const SettingsPage({Key? key, this.userId, this.businessTypeId})
+  const SettingsPage(
+      {Key? key, this.userId, this.businessTypeId})
       : super(key: key);
 
   @override

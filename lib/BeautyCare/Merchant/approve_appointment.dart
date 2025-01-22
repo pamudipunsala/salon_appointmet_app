@@ -11,6 +11,8 @@ class ApproveAppointmentScreen extends StatefulWidget {
       {Key? key, required this.userId, required businessTypeId})
       : super(key: key);
 
+  get shopId => null;
+
   @override
   _ApproveAppointmentScreenState createState() =>
       _ApproveAppointmentScreenState();
@@ -23,21 +25,31 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
 
   // Fetch appointments from the database
   Future<void> _fetchAppointments() async {
-    final url = Uri.parse(
-        'http://localhost/mobile_apps/appointmentApp/fetch_appointments.php');
-    final response = await http.post(
-      url,
-      body: {'user_id': widget.userId},
-    );
+    try {
+      // Replace with your server's IP address
+      final url = Uri.parse(
+        'http://localhost/mobile_apps/appointmentApp/fetch_appointments.php?user_id=${widget.userId}',
+      );
 
-    if (response.statusCode == 200) {
-      print('Response data: ${response.body}'); // Log response for debugging
-      setState(() {
-        appointments =
-            List<Map<String, dynamic>>.from(json.decode(response.body));
-      });
-    } else {
-      print('Failed to fetch appointments: ${response.statusCode}');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print('Response data: ${response.body}');
+        final data = json.decode(response.body);
+        if (data is List) {
+          setState(() {
+            appointments = List<Map<String, dynamic>>.from(data);
+          });
+        } else if (data['error'] != null) {
+          print('Error: ${data['error']}');
+        } else {
+          print('Unexpected response format: $data');
+        }
+      } else {
+        print('Failed to fetch appointments: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching appointments: $e');
     }
   }
 
@@ -109,50 +121,71 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
   }
 
 // Adjust time function
+  String formatTimeOfDay(TimeOfDay time) {
+    final hours = time.hour.toString().padLeft(2, '0');
+    final minutes = time.minute.toString().padLeft(2, '0');
+    return '$hours:$minutes';
+  }
+
   Future<void> _adjustTime(int index) async {
-    if (Platform.isAndroid) {
-      final TimeOfDay? picked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-      if (picked != null) {
-        setState(() {
-          selectedTime = picked;
-          appointments[index]['time'] = picked.format(context);
-        });
-        _updateAppointment(
-          id: appointments[index]['id'].toString(),
-          status: appointments[index]['status'] ?? 'Pending',
-          time: picked.format(context),
+    try {
+      if (Platform.isAndroid) {
+        final TimeOfDay? picked = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+        if (picked != null) {
+          final formattedTime = formatTimeOfDay(picked);
+          setState(() {
+            appointments[index]['time'] = formattedTime;
+          });
+          // Update the appointment time on the server
+          final success = await _updateAppointment(
+            id: appointments[index]['id'].toString(),
+            status: appointments[index]['status'] ?? 'Pending',
+            time: formattedTime,
+          );
+          if (!success) {
+            setState(() {
+              appointments[index]['time'] = 'Error updating time';
+            });
+          }
+        }
+      } else if (Platform.isIOS) {
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext builder) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 3,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                initialDateTime: DateTime.now(),
+                onDateTimeChanged: (DateTime newDateTime) async {
+                  final formattedTime = formatTimeOfDay(
+                    TimeOfDay(
+                        hour: newDateTime.hour, minute: newDateTime.minute),
+                  );
+                  setState(() {
+                    appointments[index]['time'] = formattedTime;
+                  });
+                  final success = await _updateAppointment(
+                    id: appointments[index]['id'].toString(),
+                    status: appointments[index]['status'] ?? 'Pending',
+                    time: formattedTime,
+                  );
+                  if (!success) {
+                    setState(() {
+                      appointments[index]['time'] = 'Error updating time';
+                    });
+                  }
+                },
+              ),
+            );
+          },
         );
       }
-    } else if (Platform.isIOS) {
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext builder) {
-          return Container(
-            height: MediaQuery.of(context).size.height / 3,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.time,
-              initialDateTime: DateTime.now(),
-              onDateTimeChanged: (DateTime newDateTime) {
-                setState(() {
-                  selectedTime = TimeOfDay(
-                    hour: newDateTime.hour,
-                    minute: newDateTime.minute,
-                  );
-                  appointments[index]['time'] = selectedTime!.format(context);
-                });
-                _updateAppointment(
-                  id: appointments[index]['id'].toString(),
-                  status: appointments[index]['status'] ?? 'Pending',
-                  time: selectedTime!.format(context),
-                );
-              },
-            ),
-          );
-        },
-      );
+    } catch (e) {
+      print('Error adjusting time: $e');
     }
   }
 
@@ -227,7 +260,7 @@ class _ApproveAppointmentScreenState extends State<ApproveAppointmentScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(appointment['user_id'] ?? 'No Name'),
+                                    Text(appointment['user_id'].toString()),
                                     const SizedBox(height: 5),
                                     Text(
                                         'Date: ${appointment['date'] ?? 'N/A'}'),

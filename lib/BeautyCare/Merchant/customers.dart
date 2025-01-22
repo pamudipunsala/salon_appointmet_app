@@ -7,7 +7,9 @@ import 'package:http/http.dart' as http;
 class CustomerDetailsPage extends StatefulWidget {
   final String? userId;
 
-  const CustomerDetailsPage({Key? key, required this.userId, required businessTypeId}) : super(key: key);
+  const CustomerDetailsPage(
+      {Key? key, required this.userId, required businessTypeId})
+      : super(key: key);
 
   @override
   _CustomerDetailsPageState createState() => _CustomerDetailsPageState();
@@ -22,7 +24,6 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       if (query.isEmpty) {
-        // Show all customers when no search query
         fetchCustomerData();
       } else {
         _filteredCustomers = _filteredCustomers
@@ -35,7 +36,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
 
   @override
   void initState() {
-    super.initState();   
+    super.initState();
     fetchCustomerData();
     _searchController.addListener(_filterCustomers);
   }
@@ -47,18 +48,17 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
       var response = await http.post(url, body: {'type_id': '1'});
 
       if (response.statusCode == 200) {
-        // Decode the JSON response
         var data = json.decode(response.body);
+        print("Response Data: $data"); // Debugging
 
-        // Check if it's an error response
         if (data is List) {
           setState(() {
-            _filteredCustomers =
-                List<Map<String, String>>.from(data.map((item) => {
-                      'name': item['name'] as String,
-                      'phone': item['phone'] as String,
-                      'email': item['email'] as String,
-                    }));
+            _filteredCustomers = List<Map<String, String>>.from(
+              data.map((item) => {
+                    'name': item['name'] ?? 'Unknown Name',
+                    'email': item['email'] ?? 'Unknown Email',
+                  }),
+            );
           });
         } else if (data is Map && data.containsKey("error")) {
           print("Error: ${data['error']}");

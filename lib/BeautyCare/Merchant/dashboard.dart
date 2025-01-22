@@ -49,12 +49,6 @@ class _BeauticianDashboardPageState extends State<BeauticianDashboardPage> {
           AddBranchesPage(userId: userId, businessTypeId: businessTypeId)
     },
     {
-      'title': 'Customers',
-      'icon': Icons.people,
-      'page': (userId, businessTypeId) =>
-          CustomerDetailsPage(userId: userId, businessTypeId: businessTypeId)
-    },
-    {
       'title': 'Add Services',
       'icon': Icons.room_service,
       'page': (userId, businessTypeId) =>

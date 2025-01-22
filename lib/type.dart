@@ -165,7 +165,7 @@ class _BusinessTypePageState extends State<BusinessTypePage> {
                         color: const Color.fromARGB(255, 7, 111, 57)
                             .withOpacity(0.7),
                         borderRadius:
-                            BorderRadius.circular(12), // Rounded corners
+                            BorderRadius.circular(12), 
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
